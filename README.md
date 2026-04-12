@@ -27,6 +27,7 @@ To shut down the project, run this command in the project root directory:
     ```bash
     docker compose down
     ```
+    Containers will shut down automatically.
 
 
 ---
@@ -34,7 +35,6 @@ To shut down the project, run this command in the project root directory:
 
 # PubChat Search 项目使用指南
 
----
 
 ## 🇨🇳 中文版
 
@@ -61,3 +61,5 @@ To shut down the project, run this command in the project root directory:
     ```bash
     docker compose down
     ```
+    容器会自动关闭退出。
+      
