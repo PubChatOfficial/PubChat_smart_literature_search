@@ -20,7 +20,7 @@ Please ensure **Docker** https://www.docker.com  is installed and running on you
     Once the services are ready, open your browser and visit:   
     http://localhost:8000
 
-### 三、Stop the Services
+### 3. Stop the Services
 To shut down the project, run this command in the project root directory:
     ```bash
     docker compose down
