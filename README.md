@@ -3,7 +3,7 @@
 ## 🇬🇧 English Version
 
 ### 1. Prerequisites
-Please ensure **Docker**（https://www.docker.com/） is installed and running on your local machine (start Docker Desktop for Windows / macOS users).
+Please ensure **Docker** https://www.docker.com  is installed and running on your local machine (start Docker Desktop for Windows / macOS users).
 
 ### 2. Quick Start Steps
 1.  **Get the Project**
@@ -34,8 +34,8 @@ To shut down the project, run this command in the project root directory:
 
 ## 🇨🇳 中文版
 
-### 一、环境准备
-请确保本地已安装 **Docker**（https://www.docker.com/），并且 Docker 服务处于**正常运行状态**（Windows / macOS 用户启动 Docker Desktop 即可）。
+### 一、环境准备s
+请确保本地已安装 **Docker** https://www.docker.com ， 并且 Docker 服务处于**正常运行状态**（Windows / macOS 用户启动 Docker Desktop 即可）。
 
 ### 二、快速启动步骤
 1.  **拉取项目资源**
