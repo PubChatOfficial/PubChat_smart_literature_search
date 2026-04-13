@@ -10,7 +10,7 @@ Please ensure **Docker**  https://www.docker.com   is installed and running on y
     Clone the project repository to your local machine, or download and extract the project ZIP file.
 
 2.  **Start the Services**
-    Open a terminal, navigate to the project root directory, and run the following command to start all services. Wait for the images to be pulled, containers to be built, and services to start:
+    Open a terminal, navigate to the project root directory, and run the following command to start all services. Wait for the images to be pulled, containers to be built, and services to start. Make sure port 8000 free before start the services:
 ```bash
     docker compose up -d 
 ```
@@ -43,7 +43,7 @@ To shut down the project, run this command in the project root directory. Contai
     将项目代码克隆到本地，或下载项目压缩包并解压。
 
 2.  **启动项目服务**
-    打开终端，进入项目根目录，执行以下命令启动所有服务，等待镜像拉取、容器构建和服务启动完成：
+    打开终端，进入项目根目录，执行以下命令启动所有服务，等待镜像拉取、容器构建和服务启动完成。启动前请确保8000端口是处于未被占用状态：
 ```bash
     docker compose up -d
  ```

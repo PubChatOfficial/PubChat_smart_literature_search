@@ -8,7 +8,6 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - ./nginx/snippets:/etc/nginx/snippets
-      #挂子静态资源html
       - ./frontend/dist:/usr/share/nginx/html
       - ./documents:/app/search_result
     networks:
@@ -62,16 +61,16 @@ services:
     volumes:
       - ./db/postgres/data:/var/lib/postgresql/data
       - ./db/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql 
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     networks:
       - pubchat_network
       
   redis:
     image: redis:alpine
     container_name: redis
-    ports:
-      - "6379:6379"
+    # ports:
+    #   - "6379:6379"
     volumes:
       - ./db/redis/data:/data
     networks:
