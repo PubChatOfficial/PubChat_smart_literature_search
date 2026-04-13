@@ -170,7 +170,7 @@ class UnifiedAIClient(BaseClient):
             model_flash: 可选，覆盖默认的 Flash 模型
             custom_base_url: 可选，自定义 API 端点
         """
-        self.provider = llm_config["model"]
+        self.provider = "gemini"
         self.task_id = task_id
         # self.config = self._get_ProviderConfig(provider)         
         # 加载 API 密钥
@@ -185,7 +185,7 @@ class UnifiedAIClient(BaseClient):
         # 确定模型名称（支持自定义覆盖）
         # self.model_pro_name = model_pro or self.config["model_pro"]
         # self.model_flash_name = model_flash or self.config["model_flash"]
-        self.model_pro_name = "gemini-flash-latest"
+        self.model_pro_name = "gemini-3.1-flash-lite-preview"
         self.model_flash_name = "gemini-flash-lite-latest"
         
         # 自定义 base_url
