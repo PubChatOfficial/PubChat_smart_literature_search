@@ -13,6 +13,8 @@ services:
       - ./documents:/app/search_result
     networks:
       - pubchat_network
+    depends_on:
+      - search-server
 
   search-server:
     build:

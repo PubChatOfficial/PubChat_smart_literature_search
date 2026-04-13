@@ -334,16 +334,16 @@ async def delete_document(doc_id):
         conn = await asyncpg.connect(**DB_CONFIG)
         
         # Verify ownership and existence
-        row = await conn.fetchrow(
-            'SELECT user_query, download_link FROM "userSchema"."documents" WHERE id = $1::uuid',
-            doc_id
-        )
+        # row = await conn.fetchrow(
+        #     'SELECT user_query, download_link FROM "userSchema"."documents" WHERE id = $1::uuid',
+        #     doc_id
+        # )
         
-        if not row:
-            return jsonify({
-                "success": False,
-                "message": {"zh": "文档不存在或无权删除", "en": "Document not found or permission denied"}
-            }), 404
+        # if not row:
+        #     return jsonify({
+        #         "success": False,
+        #         "message": {"zh": "文档不存在或无权删除", "en": "Document not found or permission denied"}
+        #     }), 404
             
         # Delete from DB
         await conn.execute(
