@@ -1,17 +1,52 @@
+# FROM python:3.11-slim
+
+# # 设置工作目录
+# WORKDIR /app
+
+# # 先复制 requirements.txt 并安装依赖
+# COPY backend/celery_worker/requirements.txt /app/requirements.txt
+# COPY common_utils/requirements.txt /app/common_utils/requirements.txt
+# RUN pip install --no-cache-dir -r /app/requirements.txt -r /app/common_utils/requirements.txt
+
+# # 拷贝源码
+# COPY backend/celery_worker /app/celery_worker
+# COPY common_utils /app/common_utils
+
+# # 设置 PYTHONPATH
+# # Use task_queue to avoid collision with python 'celery' package
+# ENV PYTHONPATH=/app
+
+
+# 基础镜像
 FROM python:3.11-slim
 
 # 设置工作目录
 WORKDIR /app
 
-# 先复制 requirements.txt 并安装依赖
-COPY backend/celery_worker/requirements.txt /app/requirements.txt
-COPY common_utils/requirements.txt /app/common_utils/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt -r /app/common_utils/requirements.txt
+# 安装依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# 拷贝源码
-COPY backend/celery_worker /app/celery_worker
-COPY common_utils /app/common_utils
+# 复制依赖
+COPY ./backend/celery_worker/requirements.txt requirements.txt
+COPY ./common_utils/requirements.txt common_utils/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt -r common_utils/requirements.txt
 
-# 设置 PYTHONPATH
-# Use task_queue to avoid collision with python 'celery' package
+# ====================== 复制代码 ======================
+COPY ./common_utils /app/common_utils
+COPY ./backend/celery_worker /app/celery_worker
+
+# ====================== 关键：编译 + 删除源码 ======================
+# 编译所有 .py 为 .pyc（字节码，无法直接阅读）
+RUN python -m compileall -b .
+
+# 删除所有原始 .py 源代码（核心保护）
+RUN find . -name "*.py" -delete
+# ==============================================================
+
+# 环境变量
 ENV PYTHONPATH=/app
+
+# 启动命令
+CMD ["celery", "-A", "celery_worker.celery_worker.celery_app", "worker", "--loglevel=info", "-Q", "search_queue", "--concurrency=4"]
