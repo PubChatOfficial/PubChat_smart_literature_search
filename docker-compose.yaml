@@ -67,6 +67,7 @@ services:
       - redis
     volumes:
       - ./documents/:/app/celery_worker/search_code/search_result
+      - ./backend/celery_worker/logs:/app/celery_worker/search_code/logs
     networks:
       - pubchat_network
     restart: always
