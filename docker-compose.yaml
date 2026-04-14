@@ -66,8 +66,6 @@ services:
       - postgres
       - redis
     volumes:
-      - ./backend/celery_worker:/app/celery_worker
-      - ./common_utils:/app/common_utils
       - ./documents/:/app/celery_worker/search_code/search_result
     networks:
       - pubchat_network
