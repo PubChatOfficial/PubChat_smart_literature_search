@@ -1,4 +1,4 @@
-# PubChat Search Project User Guide
+# PubChat Smart Literature Search Project User Guide
 
 ## 🇬🇧 English Version
 
@@ -30,7 +30,7 @@ To shut down the project, run this command in the project root directory. Contai
 ---
 
 
-# PubChat Search 项目使用指南
+# PubChat 智能文献检索项目使用指南
 
 
 ## 🇨🇳 中文版
