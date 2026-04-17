@@ -53,9 +53,15 @@ jobs:
           cd frontend
           shopt -s extglob
           rm -rf !(dist)
+      - name: Debug PAT
+        run: |
+          echo "PAT length: ${{ secrets.SYNC_PAT_TOKEN | length }}"
+          echo "PAT starts with: ${{ secrets.SYNC_PAT_TOKEN:0:4 }}..."
       - name: Push to public repo
+        env:
+          PAT: ${{ secrets.SYNC_PAT_TOKEN }}
         run: |
            git config user.name "GitHub Actions"
            git config user.email "actions@github.com"
-           git remote add target "https://${{ secrets.SYNC_PAT_TOKEN }}@github.com/PubChatOfficial/PubChat_smart_literature_search.git"
+           git remote add target "https://${PAT}@github.com/PubChatOfficial/PubChat_smart_literature_search.git"
            git push target main -f
