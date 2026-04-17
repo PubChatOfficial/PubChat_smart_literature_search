@@ -57,5 +57,4 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git remote add public 'https://${{ secrets.SYNC_PAT_TOKEN }}@github.com/PubChatOfficial/PubChat_smart_literature_search.git'
-          git push public main:main --force
+          git push "https://${{ secrets.SYNC_PAT_TOKEN }}@github.com/PubChatOfficial/PubChat_smart_literature_search.git" HEAD:main --force
