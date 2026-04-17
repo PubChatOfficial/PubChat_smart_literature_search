@@ -36,6 +36,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.SYNC_PAT_TOKEN }}
 
       - name: Clean backend/celery-worker
         run: |
@@ -55,9 +56,7 @@ jobs:
           rm -rf !(dist)
 
       - name: Push to public repo
-        env:
-          PAT: ${{ secrets.SYNC_PAT_TOKEN }}
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git push "https://${PAT}@github.com/PubChatOfficial/PubChat_smart_literature_search.git" HEAD:main -f
+          git push https://github.com/PubChatOfficial/PubChat_smart_literature_search.git HEAD:main -f
