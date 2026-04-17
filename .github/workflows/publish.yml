@@ -54,10 +54,8 @@ jobs:
           shopt -s extglob
           rm -rf !(dist)
       - name: Push to public repo
-        uses: ad-m/github-push-action@master
-        with:
-          repository: PubChatOfficial/PubChat_smart_literature_search
-          branch: main
-          github_token: ${{ secrets.SYNC_PAT_TOKEN }}
-          remote: true
-          force: true
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote add public https://${{ secrets.SYNC_PAT_TOKEN }}@github.com/PubChatOfficial/PubChat_smart_literature_search.git
+          git push public main:main --force
