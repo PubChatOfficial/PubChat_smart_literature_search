@@ -59,4 +59,5 @@ jobs:
           repository: PubChatOfficial/PubChat_smart_literature_search
           branch: main
           github_token: ${{ secrets.SYNC_PAT_TOKEN }}
+          remote: true
           force: true
