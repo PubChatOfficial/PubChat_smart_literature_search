@@ -1,0 +1,10 @@
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - ✅ Log system initialized for Task: f16a8877-aa2f-4c23-9856-046c60fb8f55
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - ✅ Redis connection established for progress updates.
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - 🚀 Workflow started for query: '饮酒有害健康'
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - 📰 Journal quality filter enabled: JCR: Q1-Q4, CAS: 1-4区
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - 🆕 Starting new project.
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - 2️⃣ Initializing clients...
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO -    - 🧠 AI Provider set to: {'model': 'gemini-2.5-pro', 'api': ['http://localhost:8000']}
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO -    - 🌍 Europe PMC client initialized (primary efetch source)
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - 3️⃣ Starting parallel generation of scoring criteria and initial query...
+2026-04-13 09:57:08 - LiteratureSearch_f16a8877-aa2f-4c23-9856-046c60fb8f55 - INFO - 4️⃣ Waiting for initial search query...

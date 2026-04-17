@@ -1,0 +1,137 @@
+/* Global Select Styles */
+:root {
+    --select-bg: #ffffff;
+    --select-border: #d1d5db;
+    --select-text: #1f2937;
+    --select-arrow-color: #6b7280;
+    --select-focus-ring: rgba(59, 130, 246, 0.2);
+    --select-focus-border: #3b82f6;
+}
+
+/* Dark mode overrides */
+body.dark-mode {
+    --select-bg: #1f2937;
+    --select-border: #374151;
+    --select-text: #f3f4f6;
+    --select-arrow-color: #9ca3af;
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    /* Space for the arrow */
+
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    color: var(--select-text);
+    background-color: var(--select-bg);
+    border: 1px solid var(--select-border);
+    border-radius: 0.5rem;
+    /* 8px */
+
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+
+    /* Modern Chevron Arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25em 1.25em;
+}
+
+/* Hover state */
+select:hover {
+    border-color: #9ca3af;
+}
+
+/* Focus state */
+select:focus {
+    outline: none;
+    border-color: var(--select-focus-border);
+    box-shadow: 0 0 0 4px var(--select-focus-ring);
+}
+
+/* Invalid / Placeholder state */
+select:required:invalid {
+    color: #9ca3af;
+}
+
+/* Option styling (Limited support in some browsers) */
+option {
+    color: var(--select-text);
+    background-color: var(--select-bg);
+    padding: 0.5rem;
+}
+
+/* Specific overrides for Auth forms to ensure the new style is applied */
+.input-wrapper select,
+.input-wrapper select:not(.country-select) {
+    appearance: none;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    border: 1px solid var(--select-border);
+    border-radius: 8px;
+    background-color: var(--select-bg);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 0.75rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.25em 1.25em !important;
+    color: var(--select-text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+}
+
+/* Country select specific adjustments */
+.country-select,
+.input-wrapper .country-select {
+    appearance: none;
+    width: auto;
+    min-width: 120px;
+    max-width: 140px;
+    padding: 0.75rem 2rem 0.75rem 0.75rem;
+    /* Right padding for arrow */
+    border: 1px solid var(--select-border);
+    /* Reset border radius for join with input */
+    border-radius: 8px 0 0 8px;
+    border-right: 1px solid #e5e7eb;
+    /* Separator line */
+    background-color: #f9fafb;
+    /* Light gray background to distinguish */
+
+    /* Use the same modern arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 0.5rem center !important;
+    background-size: 1em 1em !important;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Dark mode for country select */
+body.dark-mode .country-select,
+body.dark-mode .input-wrapper .country-select {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #f3f4f6;
+}
+
+/* Focus states */
+.input-wrapper select:focus,
+.country-select:focus {
+    outline: none;
+    border-color: var(--select-focus-border);
+    box-shadow: 0 0 0 3px var(--select-focus-ring);
+    z-index: 10;
+    /* Bring above input if overlapping borders */
+}

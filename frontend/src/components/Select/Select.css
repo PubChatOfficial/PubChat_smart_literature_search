@@ -1,0 +1,261 @@
+.custom-select-container {
+    position: relative;
+    width: 100%;
+}
+
+/* Prefix Variant for Country Select */
+.custom-select-container.prefix {
+    width: auto;
+    min-width: 130px;
+    max-width: 150px;
+    flex-shrink: 0;
+}
+
+.custom-select-container.prefix .custom-select-trigger {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 1px solid var(--border-color, #e5e7eb);
+    /* Keep separator */
+    background-color: #f9fafb;
+    height: 100%;
+    min-height: 46px;
+    /* Match typical input height */
+}
+
+.custom-select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.875rem;
+    padding-right: 1rem;
+    background-color: var(--input-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    min-height: 46px;
+    /* Ensure consistent height with inputs */
+    line-height: 1.5;
+}
+
+/* Hover state */
+.custom-select-trigger:hover {
+    border-color: #9ca3af;
+}
+
+/* Open/Focus state */
+.custom-select-trigger.open {
+    background-color: white;
+    border-color: var(--primary-color, #10b981);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.custom-select-value {
+    font-size: 0.9rem;
+    color: var(--text-primary, #1f2937);
+    font-family: var(--font-family);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-select-value.placeholder {
+    color: #9ca3af;
+    /* Placeholder color */
+}
+
+.custom-select-arrow {
+    color: #6b7280;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Dropdown Container */
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    animation: fadeIn 0.15s ease-out;
+    overflow: hidden;
+    /* Prevent border radius clipping */
+    /* Remove scroll from here, move to list */
+}
+
+/* Search Box */
+.custom-select-search {
+    padding: 8px 10px;
+    /* Padding inside the dropdown header */
+    border-bottom: 1px solid var(--border-color, #f3f4f6);
+    background-color: #ffffff;
+}
+
+.search-input-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 4px 10px;
+    /* Adjust padding */
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Focus effect on wrapper when input is focused */
+.search-input-wrapper:focus-within {
+    background-color: #ffffff;
+    border-color: var(--primary-color, #10b981);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+.custom-select-search .search-icon {
+    position: static !important;
+    color: #9ca3af;
+    flex-shrink: 0;
+    margin-right: 8px !important;
+    pointer-events: none;
+    transform: none !important;
+    /* Reset any potential transforms */
+}
+
+.custom-select-search .search-input {
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 4px 0 !important;
+    margin: 0 !important;
+    font-size: 0.875rem !important;
+    color: var(--text-primary, #1f2937) !important;
+    outline: none !important;
+    height: auto !important;
+    box-shadow: none !important;
+}
+
+.custom-select-search .search-input::placeholder {
+    color: #9ca3af;
+}
+
+/* Dark mode overrides for search */
+body.dark-mode .custom-select-search {
+    background-color: #1f2937;
+    border-bottom-color: #374151;
+}
+
+body.dark-mode .search-input-wrapper {
+    background-color: #374151;
+    border-color: #4b5563;
+}
+
+body.dark-mode .search-input-wrapper:focus-within {
+    background-color: #2a2a2a;
+    border-color: var(--primary-color, #10b981);
+}
+
+body.dark-mode .search-input {
+    color: #f3f4f6;
+}
+
+.custom-select-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.custom-select-option {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-primary, #1f2937);
+    cursor: pointer;
+    transition: background-color 0.1s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-select-option:hover {
+    background-color: #f3f4f6;
+}
+
+.custom-select-option.selected {
+    background-color: rgba(16, 185, 129, 0.05);
+    /* Very light primary color */
+    color: var(--primary-color, #10b981);
+    font-weight: 500;
+}
+
+.custom-select-empty {
+    padding: 1rem;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+.option-check {
+    color: var(--primary-color, #10b981);
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark Mode Support */
+body.dark-mode .custom-select-trigger {
+    background-color: var(--input-bg, #374151);
+    border-color: var(--border-color, #4b5563);
+}
+
+body.dark-mode .custom-select-container.prefix .custom-select-trigger {
+    background-color: var(--input-bg, #374151);
+    border-right-color: var(--border-color, #4b5563);
+}
+
+body.dark-mode .custom-select-trigger.open {
+    background-color: #1f2937;
+}
+
+body.dark-mode .custom-select-value {
+    color: #f3f4f6;
+}
+
+body.dark-mode .custom-select-options {
+    background-color: #1f2937;
+    border-color: #4b5563;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .custom-select-search {
+    background-color: #1f2937;
+    border-bottom-color: #374151;
+}
+
+body.dark-mode .search-input {
+    color: #f3f4f6;
+}
+
+body.dark-mode .custom-select-option {
+    color: #f3f4f6;
+}
+
+body.dark-mode .custom-select-option:hover {
+    background-color: #374151;
+}

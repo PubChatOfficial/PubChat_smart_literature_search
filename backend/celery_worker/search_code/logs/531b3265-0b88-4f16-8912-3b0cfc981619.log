@@ -1,0 +1,108 @@
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ Log system initialized for Task: 531b3265-0b88-4f16-8912-3b0cfc981619
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ Redis connection established for progress updates.
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🚀 Workflow started for query: '长期不吃早饭有害健康' with filters: [time=2000-2026]
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📰 Journal quality filter enabled: JCR: Q1-Q4, CAS: 1-4区
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🆕 Starting new project.
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 2️⃣ Initializing clients...
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    - 🧠 AI Provider set to: {'model': 'gemini-2.5-pro', 'api': ['AIzaSyDV5ESwJuPdMXhPQAjrl0vhZ-597HS1a-A']}
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    - 🌍 Europe PMC client initialized (primary efetch source)
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 3️⃣ Starting parallel generation of scoring criteria and initial query...
+2026-04-13 12:24:49 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 4️⃣ Waiting for initial search query...
+2026-04-13 12:24:54 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    - ✅ Initial search query generated: ("Breakfast"[MeSH Terms] OR "breakfast"[Title/Abstract] OR "morning meal"[Title/Abstract] OR "skippi...
+2026-04-13 12:24:54 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 5️⃣ Executing first search (parallel with scoring criteria)...
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    - ✅ Search found 6814 articles, 6814 new
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    - 🌍 Pre-fetching first 150 articles from Europe PMC (parallel with scoring criteria)...
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 6️⃣ Waiting for scoring criteria...
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    - ✅ Scoring criteria generated and saved
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🔎 [Task 531b3265-0b88-4f16-8912-3b0cfc981619/Round 1] Using pre-fetched search result...
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ Pre-fetched: 6814 articles, 6814 new
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📦 [Task 531b3265-0b88-4f16-8912-3b0cfc981619/Round 1] Processing batch 1/13 (150 PMIDs).
+2026-04-13 12:25:01 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   ⚡ Using pre-fetched Europe PMC data (parallel with scoring criteria)...
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   ✅ Prefetched Europe PMC data retrieved successfully
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ⚙️ Parsing 150 articles from Europe PMC JSON...
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ Parsed: 141 with abstract, 8 no abstract (recent), 1 no abstract (old, discarded)
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   📦 Added 8 no-abstract PMIDs (recent) to buffer
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   🗑️ Discarded 1 no-abstract PMIDs (old, >90 days)
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   ✅ Europe PMC: 141 articles ready for screening
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   ...fetched 141 articles with abstracts.
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📚 Loaded 37867 journal entries for filtering.
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📰 Journal filtering: 141 → 122 articles
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • Passed: 122 | Filtered out: 7
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • No ISSN: 0 | Not in reference: 12
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   📰 After journal filter: 122 articles to screen.
+2026-04-13 12:25:08 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   ⚡ Starting Europe PMC prefetch for batch 2/13 (600 PMIDs)...
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 2296861X: 5.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 22962565: 3.4
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 2296861X: 5.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 15598276: 1.3
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 13899457: 3.4
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 13591053: 2.2
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 14712458: 3.6
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 22122672: 4.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 20726643: 5.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 09580670: 2.8
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 01650327: 4.9
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 23988835: 2.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 20726643: 5.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 17604788: 4.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 02715317: 3.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 14366207: 4.3
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 23988835: 2.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 22279067: 2.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 14712458: 3.6
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 02715317: 3.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 07420528: 1.7
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 23979070: 1.5
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 19326203: 2.6
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 2051817X: 1.9
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 2297055X: 2.9
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 00071145: 3.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 08628408: 2.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 00071145: 3.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 20726643: 5.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 14712458: 3.6
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 20726643: 5.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 02715317: 3.1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 14787954: 2.5
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 20726643: 5.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ DEBUG: Found journal info for ISSN 20726643: 5.0
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 💾 DEBUG Redis Push: Sample Article 1 IF: 5.1 | JCR: Q1
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ➕ Accumulated 35 new articles. Total: 35.
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🎯 90% threshold reached! Starting async PubMed supplement prefetch...
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   ⚡ PubMed efetch started for 8 PMIDs (running in background)
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 💾 Updated master PMID list with 150 PMIDs.
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🏁 Batch 1 finished. Total matching articles: 35.
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🎉 Goal achieved! Found 35 studies (threshold: 20).
+2026-04-13 12:25:35 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -   ⏹️ Skipping PubMed supplement (goal already reached)
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🎉 Workflow completed successfully or reached max attempts!
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 
+
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ==================================================
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -  F I N A L  S U M M A R Y
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ==================================================
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🔄 Total rounds of search attempts: 1
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📚 Total Retrieved Articles: 150
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📰 Journal Filter (articles actually returned by PubMed):
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • Filter: JCR: Q1-Q4, CAS: 1-4区
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • Before: 141 → After: 122 | Filtered out: 19 (13.5%)
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🤖 Total AI Screened Articles: 122
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 🎯 Total Selected Articles: 35
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ==================================================
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📊 Token Usage Statistics (by Model):
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - --------------------------------------------------
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📌 gemini-3.1-flash-lite-preview:
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • API Calls: 2
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • Input: 15,853 | Output: 1,086 | Total: 16,939
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - --------------------------------------------------
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📌 gemini-flash-lite-latest:
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • API Calls: 161
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • Input: 352,202 | Output: 12,100 | Total: 364,302
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - --------------------------------------------------
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 📊 TOTAL:
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • API Calls: 163
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO -    • Input: 368,055 | Output: 13,186 | Total: 381,241
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ⏱️ Total Duration: 49s
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ==================================================
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - 💾 Project log saved to: /app/celery_worker/search_code/logs/531b3265-0b88-4f16-8912-3b0cfc981619.log
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ Zip file metadata inserted. Task marked completed. User quota decremented. Size: 0.07MB
+2026-04-13 12:25:38 - LiteratureSearch_531b3265-0b88-4f16-8912-3b0cfc981619 - INFO - ✅ Original files deleted after compression.

@@ -1,0 +1,56 @@
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ✅ Log system initialized for Task: 7a546f4b-c0ec-4225-8eff-9d70fb000952
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ✅ Redis connection established for progress updates.
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 🚀 Workflow started for query: '汹酒有害健康' with filters: [time=2000-2026]
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 📰 Journal quality filter enabled: JCR: Q1-Q4, CAS: 1-4区
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 🆕 Starting new project.
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 2️⃣ Initializing clients...
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO -    - 🧠 AI Provider set to: {'model': 'gemini-2.5-pro', 'api': ['AIzaSyAcQ-_jNRChQJ0y_MWoMQyLJvXMrJB-eog']}
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO -    - 🌍 Europe PMC client initialized (primary efetch source)
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 3️⃣ Starting parallel generation of scoring criteria and initial query...
+2026-04-13 10:03:50 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 4️⃣ Waiting for initial search query...
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - CRITICAL - 💥 A critical error occurred during the workflow: All API keys exhausted after 3 rounds
+Traceback (most recent call last):
+  File "/app/celery_worker/search_code/src/SearchWorkflow.py", line 363, in run
+    self._main_loop(executor)
+  File "/app/celery_worker/search_code/src/SearchWorkflow.py", line 398, in _main_loop
+    self._generate_initial_criteria_and_query(executor)
+  File "/app/celery_worker/search_code/src/SearchWorkflow.py", line 590, in _generate_initial_criteria_and_query
+    self.state.current_query = clean_pubmed_query(query_future.result().strip().strip('`'))
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/local/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/celery_worker/search_code/src/clients/AIPrompts.py", line 2010, in generate_pubmed_query
+    return self._generate_content_with_retry(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/celery_worker/search_code/src/clients/AIPrompts.py", line 2000, in _generate_content_with_retry
+    raise last_exception
+  File "/app/celery_worker/search_code/src/clients/AIPrompts.py", line 1977, in _generate_content_with_retry
+    result = self._generate_content(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/celery_worker/search_code/src/clients/UnifiedClient.py", line 428, in _generate_content
+    raise Exception(f"All API keys exhausted after {max_rounds} rounds")
+Exception: All API keys exhausted after 3 rounds
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 
+
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ==================================================
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO -  F I N A L  S U M M A R Y
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ==================================================
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 🔄 Total rounds of search attempts: 0
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 📚 Total Retrieved Articles: 0
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 📰 Journal Filter (articles actually returned by PubMed):
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO -    • Filter: JCR: Q1-Q4, CAS: 1-4区
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO -    • Before: 0 → After: 0 | Filtered out: 0 (0.0%)
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 🤖 Total AI Screened Articles: 0
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 🎯 Total Selected Articles: 0
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ==================================================
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ⏱️ Total Duration: 1m 39s
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ==================================================
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - 💾 Project log saved to: /app/celery_worker/search_code/logs/7a546f4b-c0ec-4225-8eff-9d70fb000952.log
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ✅ Zip file metadata inserted. Task marked completed. User quota decremented. Size: 0.00MB
+2026-04-13 10:05:30 - LiteratureSearch_7a546f4b-c0ec-4225-8eff-9d70fb000952 - INFO - ✅ Original files deleted after compression.

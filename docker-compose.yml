@@ -36,26 +36,6 @@ services:
       - pubchat_network
     restart: always
 
-  # 开发环境使用
-  # celery-worker:
-  #   build:
-  #     context: .
-  #     dockerfile: ./backend/celery_worker/Dockerfile
-  #   container_name: celery-worker
-  #   env_file:
-  #     - ./common_utils/.env.shared
-  #     - ./backend/celery_worker/.env.shared
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   volumes:
-  #     - ./backend/celery_worker:/app/celery_worker
-  #     - ./common_utils:/app/common_utils
-  #     - ./documents/:/app/celery_worker/search_code/search_result
-  #   command: celery -A celery_worker.celery_worker.celery_app worker --loglevel=info -Q search_queue --concurrency=4
-  #   networks:
-  #     - pubchat_network
-
   celery-worker:
     image: wuyuxuan1037/pubchat-celery-worker:latest
     container_name: celery-worker

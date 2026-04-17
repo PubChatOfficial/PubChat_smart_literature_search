@@ -1,18 +1,12 @@
 # 忽略frontend目录下的所有文件
-frontend/*
-
-# 保留frontend目录下的dist文件
-!frontend/dist/
+node_modules/
 
 # backend目录下的文件
-backend/celery_worker/*
-!backend/celery_worker/.env.shared
 backend/logs/*
 
 # 忽略db目录下的postgres/data文件
 db/postgres/data/*
 db/redis/data/*
-
 
 # 忽略documents目录下的所有文件
 documents/*
