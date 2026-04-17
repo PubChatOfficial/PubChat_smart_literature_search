@@ -41,7 +41,7 @@ jobs:
 
       - name: Clean backend/celery-worker
         run: |
-          cd backend/celery-worker
+          cd backend/celery_worker
           shopt -s extglob
           rm -rf !(.env.shared)
       - name: Remove dev files
