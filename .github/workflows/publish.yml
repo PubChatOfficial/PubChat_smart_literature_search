@@ -57,5 +57,5 @@ jobs:
         run: |
            git config user.name "GitHub Actions"
            git config user.email "actions@github.com"
-           git remote add target 'https://${{ secrets.SYNC_PAT_TOKEN }}@github.com/PubChatOfficial/PubChat_smart_literature_search.git'
+           git remote add target "https://${{ secrets.SYNC_PAT_TOKEN }}@github.com/PubChatOfficial/PubChat_smart_literature_search.git"
            git push target main -f
