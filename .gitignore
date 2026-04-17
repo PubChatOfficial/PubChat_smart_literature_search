@@ -18,7 +18,7 @@ __pycache__/
 # 忽略环境变量
 .env
 
-# 忽略 VSCode 配置目录
+# 忽略 VSCode  的配置目录
 .vscode/
 .devcontainer/
 
