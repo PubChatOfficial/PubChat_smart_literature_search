@@ -52,8 +52,8 @@ class KeyPool:
         self.provider = provider or "unknown"
         random.shuffle(self.available_keys)  # 初始随机打乱
         
-        # API 错误记录地址（支持 401/402/403/429）
-        self._error_log_url = os.getenv("BASE_URL_API", "").rstrip("/") + "/api/4xx-error"
+        # # API 错误记录地址（支持 401/402/403/429）
+        # self._error_log_url = os.getenv("BASE_URL_API", "").rstrip("/") + "/api/4xx-error"
     
     def get_next_key(self) -> tuple:
         """

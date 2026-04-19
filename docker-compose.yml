@@ -46,7 +46,6 @@ services:
       - postgres
       - redis
     volumes:
-      - ./documents/:/app/celery_worker/search_code/search_result
       - ./backend/celery_worker/logs:/app/celery_worker/search_code/logs
     networks:
       - pubchat_network
@@ -61,8 +60,6 @@ services:
     volumes:
       - ./db/postgres/data:/var/lib/postgresql/data
       - ./db/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql 
-    # ports:
-    #   - "5432:5432"
     networks:
       - pubchat_network
     restart: always
@@ -70,8 +67,6 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
-    # ports:
-    #   - "6379:6379"
     volumes:
       - ./db/redis/data:/data
     networks:

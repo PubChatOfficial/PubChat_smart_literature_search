@@ -255,7 +255,7 @@ const tableColumnOrder = [
   "通讯作者",
   "第一作者单位",
   "ISSN",
-  "大类分区",
+  "中科院分区",
   "JCR分区",
   "最新IF",
   "5年IF",

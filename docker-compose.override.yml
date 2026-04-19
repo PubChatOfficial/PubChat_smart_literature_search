@@ -19,7 +19,7 @@ services:
   search-server:
     build:
       context: .
-      dockerfile: ./backend/search_server/Dockerfile.dev
+      dockerfile: ./backend/search_server/Dockerfile
     container_name: search-server
     env_file:
       - ./common_utils/.env.shared
@@ -40,7 +40,7 @@ services:
   celery-worker:
     build:
       context: .
-      dockerfile: ./backend/celery_worker/Dockerfile
+      dockerfile: ./backend/celery_worker/Dockerfile.dev
     container_name: celery-worker
     env_file:
       - ./common_utils/.env.shared
@@ -64,8 +64,8 @@ services:
     volumes:
       - ./db/postgres/data:/var/lib/postgresql/data
       - ./db/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql 
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5432:5432"
     networks:
       - pubchat_network
     restart: always
@@ -73,8 +73,8 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
-    # ports:
-    #   - "6379:6379"
+    ports:
+      - "6379:6379"
     volumes:
       - ./db/redis/data:/data
     networks:
