@@ -7,7 +7,7 @@ on:
 jobs:
   build-celery:
     runs-on: ubuntu-latest
-    if: contains(join(github.event.head_commit.modified), 'backend/celery-worker/')
+    if: contains(join(github.event.head_commit.modified), 'backend/celery_worker/')
     steps:
       - uses: actions/checkout@v4
       - name: Set up QEMU
