@@ -110,7 +110,7 @@ class PubMedClient:
         或
         PUBMED_API_KEY=key1
         """
-        api_keys = ["29563e85a140f011f08508d6d71c452e3d08","da361bdd993c85a319b6b8bf482f979dc508","9b0de3da446aabd777cb6825a77867197008","a1eb6228a2b76e101564b689bffc94f95508"]
+        api_keys = ["29563e85a140f011f08508d6d71c452e3d08","da361bdd993c85a319b6b8bf482f979dc508","9b0de3da446aabd777cb6825a77867197008","a1eb6228a2b76e101564b689bffc94f95508","1d9a1cfbe06b7202316651255afa71209208","9fc9e852f1648e302c5bcb2d5f8558d46408","fbf5ffab87c121c8eeaaa1c4278727299608"]
 
         self.api_key_manager = PubMedAPIKeyManager(api_keys)
         self.api_key = self.api_key_manager.get_current_key()

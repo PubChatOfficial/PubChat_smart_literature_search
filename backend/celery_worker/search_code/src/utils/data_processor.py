@@ -22,7 +22,7 @@ class UnpaywallEmailManager:
     """
     _instance = None
     _emails = []
-    _current_index = 0
+    # _current_index = 0
     
     @classmethod
     def initialize(cls, emails_str: str = None):
@@ -51,12 +51,16 @@ class UnpaywallEmailManager:
         Returns:
             用于 Unpaywall API 的 email
         """
+        import random
+
         if not cls._emails:
             cls.initialize()
+
+        random_email = random.choice(cls._emails)   
         
-        email = cls._emails[cls._current_index]
-        cls._current_index = (cls._current_index + 1) % len(cls._emails)
-        return email
+        # email = cls._emails[cls._current_index]
+        # cls._current_index = (cls._current_index + 1) % len(cls._emails)
+        return random_email
 
 # Excel 非法字符正则表达式（控制字符，除了 Tab, LF, CR）
 ILLEGAL_CHARACTERS_RE = re.compile(
