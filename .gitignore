@@ -22,3 +22,6 @@ __pycache__/
 .vscode/
 .devcontainer/
 
+# 忽略.DS_Store文件（macOS系统生成的隐藏文件）
+.DS_Store
+
