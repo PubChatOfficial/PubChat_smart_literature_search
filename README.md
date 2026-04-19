@@ -3,7 +3,9 @@
 ## 🇬🇧 English Version
 
 ### 1. Prerequisites
-Please ensure **Docker**  https://www.docker.com   is installed and running on your local machine (start Docker Desktop for Win / macOS then continue following steps).
+1. Please use a VPN if your region or country has network limitations, otherwise Docker image pulling will fail.
+
+2. Please ensure **Docker**  https://www.docker.com   is installed and running on your local machine (start Docker Desktop for Win / macOS then continue following steps).
 
 ### 2. Quick Start Steps
 1.  **Mac/Linux User**
@@ -39,7 +41,9 @@ To shut down the project, run this command in the project root directory. Contai
 ## 🇨🇳 中文版
 
 ### 一、环境准备
-请确保本地已安装 **Docker**  https://www.docker.com  ， 并且 Docker 服务处于**正常运行状态**（Win / macOS 用户启动 Docker Desktop 再进行后续操作）。
+1. 如果所处国家或地区存在网络封锁或异常，请自行开启VPN，否则会出现镜像拉取失败等问题。
+
+2. 请确保本地已安装 **Docker**  https://www.docker.com  ， 并且 Docker 服务处于**正常运行状态**（Win / macOS 用户启动 Docker Desktop 再进行后续操作）。
 
 ### 二、快速启动步骤
 1.  **Mac/Linux用户**
