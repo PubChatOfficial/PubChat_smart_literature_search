@@ -62,7 +62,7 @@ class ClientPrompts:
 
         **第{attempt_number}轮检索 - 基于用户问题"{user_query}"生成检索式**
 
-        **重要：请按以下三步分析法生成检索式**
+        **重要： 请按以下三步分析法生成检索式**
 
         ---
 

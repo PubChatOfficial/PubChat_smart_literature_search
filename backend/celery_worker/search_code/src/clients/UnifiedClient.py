@@ -107,7 +107,7 @@ class KeyPool:
                         "key_code": key,
                         "error_code": error_code or "unknown"  # 发送具体错误码
                     },
-                    timeout=2  # 快速超时，不阻塞
+                    timeout=2  #快速超时，不阻塞
                 )
                 logger.debug(f"📝 API 错误 ({error_code}) 已记录到数据库")
             except Exception as e:
