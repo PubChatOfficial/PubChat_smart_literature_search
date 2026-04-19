@@ -354,7 +354,7 @@ class PubMedClient:
                 attempt += 1
                 logger.error(f"⚠️ PubMed Efetch by PMIDs API error (Attempt {attempt}/{max_attempts}, API Key #{current_key_index + 1}): {e}")
 
-                # 如果有多个API密钥且未达到最大尝试次数，重试（下次循环会随机选择新的密钥）
+                # 如 果有多个API密钥且未达到最大尝试次数，重试（下次循环会随机选择新的密钥）
                 if self.api_key_manager and attempt < max_attempts:
                     logger.warning(f"   Will retry with a randomly selected API key...")
                     continue
