@@ -3,6 +3,7 @@ node_modules/
 
 # backend目录下的文件
 backend/logs/*
+backend/celery_worker/logs/*
 
 # 忽略db目录下的postgres/data文件
 db/postgres/data/*
