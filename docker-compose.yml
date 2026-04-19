@@ -47,9 +47,11 @@ services:
       - redis
     volumes:
       - ./backend/celery_worker/logs:/app/celery_worker/search_code/logs
+      - ./documents/:/app/celery_worker/search_code/search_result
     networks:
       - pubchat_network
     restart: always
+    command: celery -A celery_worker.celery_worker.celery_app worker --loglevel=info -Q search_queue --concurrency=4
 
 
   postgres:
