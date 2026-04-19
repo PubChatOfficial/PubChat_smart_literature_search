@@ -22,8 +22,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./backend/celery-worker
-          file: ./backend/celery-worker/Dockerfile.prod
+          context: ./backend/celery_worker
+          file: ./backend/celery_worker/Dockerfile.prod
           push: true
           platforms: linux/amd64,linux/arm64
           tags: wuyuxuan1037/pubchat-celery-worker:latest
