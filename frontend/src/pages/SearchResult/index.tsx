@@ -408,7 +408,7 @@ export const LiteratureSearchResult: React.FC<LiteratureSearchResultProps> = ({ 
       case "通讯作者": return "corresponding_author";
       case "第一作者单位": return "first_author_affiliation";
       case "ISSN": return "issn";
-      case "大类分区": return "category_partition";
+      case "中科院分区": return "category_partition";
       // "大类分区" is not directly in ArticleData, handled below
       case "JCR分区": return "jcr_partition";
       case "最新IF": return "latest_if";
@@ -949,4 +949,3 @@ export const LiteratureSearchResult: React.FC<LiteratureSearchResultProps> = ({ 
     </div >
   );
 };
-
