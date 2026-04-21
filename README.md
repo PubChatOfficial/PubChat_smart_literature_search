@@ -26,7 +26,9 @@ Once the services are ready, open your browser and visit:
     http://localhost:8000
 
 ### 4. Stop the Services
-To shut down the project, run this command in the project root directory. Containers will shut down automatically:
+1. To stop or restart the service, please go to **Containers** in the left sidebar of **Docker Desktop**, locate the container named `smart_literature_search`, and click its restart or stop button.
+
+2. To uninstall the project, run this command in the project root directory. Containers will shut down automatically:
 ```bash
     docker compose down
 ```
@@ -63,7 +65,9 @@ To shut down the project, run this command in the project root directory. Contai
     http://localhost:8000
 
 ### 四、停止服务
-如需关闭项目，在项目根目录执行，容器会自动关闭退出：
+1. 如需停止或者重启服务，请点击在**Docker Desktop**左侧边栏的**Container**里的容器列表，找到`smart_literature_search`的重启/关闭按钮。
+
+2. 如需关闭项目，在项目根目录执行，容器会自动关闭退出：
 ```bash
     docker compose down
 ```
