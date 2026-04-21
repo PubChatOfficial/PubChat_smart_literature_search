@@ -21,7 +21,7 @@
  ```
     
 
-### 4. Access the Application
+### 3. Access the Application
 Once the services are ready, open your browser and visit:   
     http://localhost:8000
 
