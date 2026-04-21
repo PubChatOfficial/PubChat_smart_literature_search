@@ -11,13 +11,13 @@
 1.  **Mac/Linux User**
     Open ‘Terminal’, copy the command below and press ’Enter‘：
 ```bash
-    curl -L -o PubChat.zip https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip && unzip -q PubChat.zip && cd PubChat_smart_literature_search-main && docker compose up -d && rm ../PubChat.zip
+curl -L -o PubChat.zip https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip && unzip -q PubChat.zip && cd PubChat_smart_literature_search-main && docker compose up -d && rm ../PubChat.zip
 ```
 
 2.  **Windows User**
     Press the ’Win‘ key, search for ’PowerShell‘, open it, then copy the command below and press ’Enter‘：
 ```bash
-    Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip" -OutFile "PubChat.zip"; Expand-Archive -Path "PubChat.zip" -DestinationPath "."; cd PubChat_smart_literature_search-main; docker compose up -d; Remove-Item "..\PubChat.zip"
+Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip" -OutFile "PubChat.zip"; Expand-Archive -Path "PubChat.zip" -DestinationPath "."; cd PubChat_smart_literature_search-main; docker compose up -d; Remove-Item "..\PubChat.zip"
  ```
     
 
@@ -30,7 +30,7 @@ Once the services are ready, open your browser and visit:
 
 2. To uninstall the project, run this command in the project root directory. Containers will shut down automatically:
 ```bash
-    docker compose down
+docker compose down
 ```
 
 
@@ -69,6 +69,6 @@ Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literat
 
 2. 如需关闭项目，在项目根目录执行，容器会自动关闭退出：
 ```bash
-    docker compose down
+docker compose down
 ```
       
