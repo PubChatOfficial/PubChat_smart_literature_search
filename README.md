@@ -51,13 +51,13 @@ Once the services are ready, open your browser and visit:
 1.  **Mac/Linux用户**
     打开**“终端 (Terminal)”，复制粘贴这一整行**代码并回车：
 ```bash
-    curl -L -o PubChat.zip https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip && unzip -q PubChat.zip && cd PubChat_smart_literature_search-main && docker compose up -d && rm ../PubChat.zip
+curl -L -o PubChat.zip https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip && unzip -q PubChat.zip && cd PubChat_smart_literature_search-main && docker compose up -d && rm ../PubChat.zip
 ```
 
 2.  **Win用户**
     按 Win键，搜索 PowerShell并打开，然后复制粘贴这一整行代码并回车：
 ```bash
-    Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip" -OutFile "PubChat.zip"; Expand-Archive -Path "PubChat.zip" -DestinationPath "."; cd PubChat_smart_literature_search-main; docker compose up -d; Remove-Item "..\PubChat.zip"
+Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip" -OutFile "PubChat.zip"; Expand-Archive -Path "PubChat.zip" -DestinationPath "."; cd PubChat_smart_literature_search-main; docker compose up -d; Remove-Item "..\PubChat.zip"
  ```
 
 ### 三、访问应用
