@@ -26,7 +26,7 @@ Once the services are ready, open your browser and visit:
     http://localhost:8000
 
 ### 4. Stop the Services
-1. To stop or restart the service, please go to **Containers** in the left sidebar of **Docker Desktop**, locate the container named `smart_literature_search`, and click its restart or stop button.
+1. To stop or restart the service, please go to **Containers** in the left sidebar of **Docker Desktop**, locate the container named `pubchat_smart_literature_search-main`, and click its restart or stop button.
 
 2. To uninstall the project, run this command in the project root directory. Containers will shut down automatically:
 ```bash
@@ -65,7 +65,7 @@ Once the services are ready, open your browser and visit:
     http://localhost:8000
 
 ### 四、停止服务
-1. 如需停止或者重启服务，请点击在**Docker Desktop**左侧边栏的**Container**里的容器列表，找到`smart_literature_search`的重启/关闭按钮。
+1. 如需停止或者重启服务，请点击在**Docker Desktop**左侧边栏的**Container**里的容器列表，找到`pubchat_smart_literature_search-main`的重启/关闭按钮。
 
 2. 如需关闭项目，在项目根目录执行，容器会自动关闭退出：
 ```bash
