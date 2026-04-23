@@ -58,7 +58,7 @@ curl -L -o PubChat.zip https://github.com/PubChatOfficial/PubChat_smart_literatu
     按 Win键，搜索 PowerShell并打开，然后复制粘贴这一整行代码并回车：
 ```bash
 Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip" -OutFile "PubChat.zip"; Expand-Archive -Path "PubChat.zip" -DestinationPath "."; cd PubChat_smart_literature_search-main; docker compose up -d; Remove-Item "..\PubChat.zip"
- ```
+```
 
 ### 三、访问应用
 服务启动成功后，打开浏览器，访问以下地址：
