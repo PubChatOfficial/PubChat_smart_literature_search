@@ -499,6 +499,9 @@ export const LiteratureSearchTask: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
+                  const isComposing = e.nativeEvent.isComposing || e.keyCode === 229;
+                  if (isComposing) return;
+
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleSearch();
