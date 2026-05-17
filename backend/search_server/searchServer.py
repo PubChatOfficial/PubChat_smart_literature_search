@@ -182,13 +182,13 @@ async def stop_search_task():
         logger.info(f"Task {task_id} (Celery ID: {revoke_id}) revoked.")
         
         # # 2. Update User Status in DB and Task Status
-        # conn = await asyncpg.connect(**DB_CONFIG)
+        conn = await asyncpg.connect(**DB_CONFIG)
         # await conn.execute('UPDATE "userSchema"."users" SET is_running = false WHERE id = $1', user_id)
         
         # Update tasks table status if column exists
         try:
             # Assuming 'status' column exists, if not this will fail but caught
-             await conn.execute('UPDATE "userSchema"."tasks" SET status = \'stopped\' WHERE id = $1', int(task_id))
+            await conn.execute('UPDATE "userSchema"."tasks" SET status = \'stopped\' WHERE id = $1::uuid', task_id)
         except Exception as e:
             logger.warning(f"Could not update status in tasks table (maybe column missing?): {e}")
 
@@ -364,4 +364,3 @@ async def delete_document(doc_id):
     finally:
         if conn:
             await conn.close()
-

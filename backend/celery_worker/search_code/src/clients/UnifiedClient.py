@@ -29,6 +29,15 @@ logger = logging.getLogger(__name__)
 # 线程本地变量，用于跟踪当前使用的 Key 编号
 _thread_local = threading.local()
 
+GOOGLE_GEMINI_PRESETS = {"", "google", "google_gemini", "gemini", "gemini-2.5-pro"}
+OPENROUTER_GEMINI_PRESETS = {"openrouter_gemini", "openrouter", "openrouter-gemini"}
+
+DEFAULT_GOOGLE_PRO_MODEL = "gemini-flash-lite-latest"
+DEFAULT_GOOGLE_FLASH_MODEL = "gemini-flash-lite-latest"
+DEFAULT_OPENROUTER_PRO_MODEL = "~google/gemini-flash-latest"
+DEFAULT_OPENROUTER_FLASH_MODEL = "~google/gemini-flash-latest"
+DEFAULT_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
 
 class KeyPool:
     """
@@ -170,26 +179,17 @@ class UnifiedAIClient(BaseClient):
             model_flash: 可选，覆盖默认的 Flash 模型
             custom_base_url: 可选，自定义 API 端点
         """
-        self.provider = "gemini"
         self.task_id = task_id
-        # self.config = self._get_ProviderConfig(provider)         
-        # 加载 API 密钥
-        # api_keys_str = self.config["env_key"]
-        # api_keys_list = [k["key_code"] for k in self._get_Api_Keys(api_keys_str)]
-        api_keys_list = llm_config["api"]
-        self.sdk_type = "google"
+        self.provider, self.sdk_type, self.base_url, default_pro, default_flash = self._resolve_provider_settings(
+            llm_config=llm_config,
+            custom_base_url=custom_base_url,
+        )
 
-
+        api_keys_list = self._normalize_api_keys(llm_config.get("api"))
         self.api_key_manager = APIKeyManager(api_keys_list)
-        
-        # 确定模型名称（支持自定义覆盖）
-        # self.model_pro_name = model_pro or self.config["model_pro"]
-        # self.model_flash_name = model_flash or self.config["model_flash"]
-        self.model_pro_name = "gemini-3.1-flash-lite-preview"
-        self.model_flash_name = "gemini-flash-lite-latest"
-        
-        # 自定义 base_url
-        # self.base_url = custom_base_url or self.config["base_url"]
+
+        self.model_pro_name = model_pro or default_pro
+        self.model_flash_name = model_flash or default_flash
         
         # 📊 Token 使用统计（按模型分类）
         self.token_stats = defaultdict(lambda: {
@@ -204,13 +204,62 @@ class UnifiedAIClient(BaseClient):
         # 初始化 Key 池和模型
         self._init_key_pool_and_models()
         
-        logger.info(f"✅ UnifiedAIClient 初始化成功: {llm_config}")
+        safe_config = {
+            "model": (llm_config or {}).get("model", ""),
+            "api": f"{len(api_keys_list)} key(s)",
+        }
+        logger.info(f"✅ UnifiedAIClient 初始化成功: {safe_config}")
         logger.info(f"   📦 SDK 类型: {self.sdk_type}")
         logger.info(f"   🚀 Pro 模型: {self.model_pro_name}")
         logger.info(f"   ⚡ Flash 模型: {self.model_flash_name}")
         logger.info(f"   🔑 可用 Key: {self.key_pool.total_count} 个")
-        # if self.base_url:
-        #     logger.info(f"   🔗 API 端点: {self.base_url}")
+        if self.base_url:
+            logger.info(f"   🔗 API 端点: {self.base_url}")
+
+    @staticmethod
+    def _normalize_api_keys(api_keys) -> list[str]:
+        """Normalize API keys from DB/frontend into a non-empty string list."""
+        if isinstance(api_keys, str):
+            keys = [item.strip() for item in api_keys.split(",") if item.strip()]
+        elif isinstance(api_keys, (list, tuple)):
+            keys = [str(item).strip() for item in api_keys if str(item).strip()]
+        else:
+            keys = []
+        if not keys:
+            raise ValueError("At least one API key must be provided")
+        return keys
+
+    @staticmethod
+    def _resolve_provider_settings(llm_config: dict, custom_base_url: Optional[str] = None) -> tuple[str, str, Optional[str], str, str]:
+        """Resolve frontend provider/channel preset into LangChain client settings."""
+        preset = str((llm_config or {}).get("model") or "").strip().lower()
+
+        if preset in GOOGLE_GEMINI_PRESETS:
+            return (
+                "gemini",
+                "google",
+                None,
+                os.getenv("GOOGLE_GEMINI_PRO_MODEL", DEFAULT_GOOGLE_PRO_MODEL),
+                os.getenv("GOOGLE_GEMINI_FLASH_MODEL", DEFAULT_GOOGLE_FLASH_MODEL),
+            )
+
+        if preset in OPENROUTER_GEMINI_PRESETS:
+            return (
+                "openrouter",
+                "openai_compatible",
+                custom_base_url or os.getenv("OPENROUTER_BASE_URL", DEFAULT_OPENROUTER_BASE_URL),
+                os.getenv("OPENROUTER_GEMINI_PRO_MODEL", DEFAULT_OPENROUTER_PRO_MODEL),
+                os.getenv("OPENROUTER_GEMINI_FLASH_MODEL", DEFAULT_OPENROUTER_FLASH_MODEL),
+            )
+
+        logger.warning(f"Unknown LLM provider preset '{preset}', falling back to Google Gemini")
+        return (
+            "gemini",
+            "google",
+            None,
+            os.getenv("GOOGLE_GEMINI_PRO_MODEL", DEFAULT_GOOGLE_PRO_MODEL),
+            os.getenv("GOOGLE_GEMINI_FLASH_MODEL", DEFAULT_GOOGLE_FLASH_MODEL),
+        )
     
     def _init_key_pool_and_models(self):
         """初始化 Key 池和模型构建器"""
@@ -233,15 +282,15 @@ class UnifiedAIClient(BaseClient):
                 model=self.model_pro_name,
                 google_api_key=key,
                 temperature=0.1,
-                max_retries=1,
-                timeout=120,
+                retries=0,
+                request_timeout=120,
             )
             self._model_builder_flash = lambda key: ChatGoogleGenerativeAI(
                 model=self.model_flash_name,
                 google_api_key=key,
                 temperature=0.1,
-                max_retries=0,
-                timeout=30,
+                retries=0,
+                request_timeout=30,
             )
         elif sdk_type == "anthropic":
             from langchain_anthropic import ChatAnthropic
@@ -316,6 +365,8 @@ class UnifiedAIClient(BaseClient):
         # 🔄 重试轮次：所有 key 都失败后，等待 8秒/16秒，第 3 轮失败后退出
         max_rounds = 3
         wait_times = [0, 8, 16]
+        transient_retry_limit = int(os.getenv("AI_TRANSIENT_MAX_RETRIES_PER_ROUND", "6"))
+        last_error = None
 
         for round_num in range(max_rounds):
             if round_num > 0:
@@ -323,6 +374,7 @@ class UnifiedAIClient(BaseClient):
                 logger.warning(f"⏳ 所有 API key 已耗尽，等待 {wait_seconds} 秒后重置...")
                 time.sleep(wait_seconds)
                 self.key_pool.reset_all()
+            transient_failures = 0
             
             # 尝试所有可用 Key
             while not self.key_pool.is_all_exhausted():
@@ -364,6 +416,7 @@ class UnifiedAIClient(BaseClient):
                     return response_text
 
                 except Exception as e:
+                    last_error = e
                     error_str = str(e).lower()
                     
                     # 检查是否是需要切换 Key 或重试的错误
@@ -372,9 +425,40 @@ class UnifiedAIClient(BaseClient):
                     # 2. 认证/权限/付费错误 (401/402/403) - API Key 无效、权限不足或需要付费
                     is_auth_error = any(keyword in error_str for keyword in ["401", "402", "403", "unauthorized", "forbidden", "invalid", "authentication", "permission", "payment", "billing"])
                     # 3. 网络抖动/SSL 错误（通常在代理环境下常见）
-                    is_network_error = any(keyword in error_str for keyword in ["ssl", "connection", "unreachable", "timeout", "eof", "connection_error", "connecterror"])
+                    is_network_error = any(
+                        keyword in error_str
+                        for keyword in [
+                            "ssl",
+                            "connection",
+                            "unreachable",
+                            "timeout",
+                            "timed out",
+                            "eof",
+                            "connection_error",
+                            "connecterror",
+                            "disconnected",
+                            "remoteprotocolerror",
+                            "protocol error",
+                        ]
+                    )
                     # 4. 服务器错误 (5xx) - 服务端临时问题，应该重试
-                    is_server_error = any(keyword in error_str for keyword in ["500", "502", "503", "504", "internal server error", "bad gateway", "service unavailable", "gateway timeout"])
+                    is_server_error = any(
+                        keyword in error_str
+                        for keyword in [
+                            "499",
+                            "500",
+                            "502",
+                            "503",
+                            "504",
+                            "cancelled",
+                            "deadline_exceeded",
+                            "unavailable",
+                            "internal server error",
+                            "bad gateway",
+                            "service unavailable",
+                            "gateway timeout",
+                        ]
+                    )
                     
                     # 确定错误码（用于日志记录）
                     error_code = None
@@ -409,11 +493,29 @@ class UnifiedAIClient(BaseClient):
                         logger.warning(f"⚠️ {self.provider}: {task_description} - Key [{key_idx + 1}] 报 {error_code}/认证付费权限错误，尝试切换下一个 Key")
                     elif is_server_error:
                         # 5xx 服务器错误：不是 Key 的问题，等待后重试（不标记 Key 为耗尽）
-                        logger.warning(f"⚠️ {self.provider}: {task_description} - 服务器错误 {error_code}: {e}，等待后重试...")
+                        transient_failures += 1
+                        logger.warning(
+                            f"⚠️ {self.provider}: {task_description} - 服务器错误 {error_code}: {e}，"
+                            f"等待后重试 ({transient_failures}/{transient_retry_limit})..."
+                        )
+                        if transient_failures >= transient_retry_limit:
+                            raise RuntimeError(
+                                f"{self.provider}: {task_description} failed after "
+                                f"{transient_retry_limit} transient server-error retries: {e}"
+                            ) from e
                         time.sleep(2)  # 服务器错误等待稍长一些
                     elif is_network_error:
                         # 网络错误：尝试切换下一个 Key 或重试
-                        logger.warning(f"⚠️ {self.provider}: {task_description} - 网络/SSL 错误: {e} (Key [{key_idx + 1}])，尝试切换...")
+                        transient_failures += 1
+                        logger.warning(
+                            f"⚠️ {self.provider}: {task_description} - 网络/SSL 错误: {e} "
+                            f"(Key [{key_idx + 1}])，等待后重试 ({transient_failures}/{transient_retry_limit})..."
+                        )
+                        if transient_failures >= transient_retry_limit:
+                            raise RuntimeError(
+                                f"{self.provider}: {task_description} failed after "
+                                f"{transient_retry_limit} transient network retries: {e}"
+                            ) from e
                         # 稍微等待一下避开网络波动
                         time.sleep(1)
                     else:
@@ -425,7 +527,7 @@ class UnifiedAIClient(BaseClient):
             # 本轮所有 Key 都已耗尽
             if round_num >= max_rounds - 1:
                 logger.error(f"❌ 已尝试 {max_rounds} 轮，所有 API key 均失败，退出任务")
-                raise Exception(f"All API keys exhausted after {max_rounds} rounds")
+                raise Exception(f"All API keys exhausted after {max_rounds} rounds") from last_error
 
         raise Exception(f"{self.provider} 调用失败: {task_description}")
 
@@ -467,4 +569,3 @@ class UnifiedAIClient(BaseClient):
                 token_info = f" [Tokens: {input_tokens}↓ {output_tokens}↑ = {total_tokens}]"
 
         return token_info
-

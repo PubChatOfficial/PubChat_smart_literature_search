@@ -31,6 +31,7 @@ from .utils.data_processor import (
 )
 from .utils.pmid_buffer import PMIDBuffer
 from .clients import UnifiedAIClient
+from .embedding import create_embedding_provider, StreamingEmbeddingScreeningPipeline
 
 # 全局终止标志（用于优雅停止）
 _shutdown_requested = False
@@ -178,6 +179,13 @@ class SearchWorkflow:
         if src_logger.hasHandlers():
             src_logger.handlers.clear()
         src_logger.addHandler(file_handler)
+
+        search_code_logger = logging.getLogger("search_code")
+        search_code_logger.setLevel(logging.INFO)
+        search_code_logger.propagate = False
+        if search_code_logger.hasHandlers():
+            search_code_logger.handlers.clear()
+        search_code_logger.addHandler(file_handler)
 
         # 🔇 禁用第三方库的 INFO 日志
         logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -330,7 +338,37 @@ class SearchWorkflow:
 
         # 使用统一的 AI 客户端（传递 task_id 用于 429 错误记录）
         self.ai_client = UnifiedAIClient(llm_config, task_id=self.state.task_number)
-        self.logger.info(f"   - 🧠 AI Provider set to: {llm_config}")
+        safe_model = (llm_config or {}).get("model", "")
+        safe_api = (llm_config or {}).get("api") or []
+        safe_key_count = len([item for item in safe_api.split(",") if item.strip()]) if isinstance(safe_api, str) else len(safe_api)
+        self.logger.info(f"   - 🧠 AI Provider preset: {safe_model or 'google_gemini'} ({safe_key_count} key(s))")
+        self.embedding_provider = None
+        self.embedding_pipeline = None
+        self.embedding_query_vector = None
+
+        if self.config.get("embedding_enabled", True):
+            self.embedding_provider = create_embedding_provider(llm_config, self.config)
+            self.embedding_pipeline = StreamingEmbeddingScreeningPipeline(
+                embedding_provider=self.embedding_provider,
+                threshold=self.config["embedding_similarity_threshold"],
+                batch_size=self.config["embedding_batch_size"],
+                initial_concurrency=self.config["embedding_initial_concurrency"],
+                max_concurrency=self.config["embedding_max_concurrency"],
+                ramp_delay_seconds=self.config["embedding_ramp_delay_seconds"],
+                backpressure_limit=self.config["embedding_backpressure_limit"],
+                audit_path=self.state.embedding_prefilter_file,
+            )
+            self.logger.info(
+                "   - 🧭 Embedding prefilter enabled: threshold=%.4f, batch=%s, concurrency=%s→%s, ramp=%.1fs",
+                self.config["embedding_similarity_threshold"],
+                self.config["embedding_batch_size"],
+                self.config["embedding_initial_concurrency"],
+                self.config["embedding_max_concurrency"],
+                self.config["embedding_ramp_delay_seconds"],
+            )
+            self.logger.info(f"   - 🧭 Embedding provider: {self.embedding_provider.__class__.__name__}")
+        else:
+            self.logger.info("   - 🧭 Embedding prefilter disabled; articles will go directly to LLM screening")
 
         # PubMed 客户端（用于 esearch 和 fallback）
         self.pubmed_client = PubMedClient()
@@ -355,12 +393,15 @@ class SearchWorkflow:
         original_term_handler = signal.signal(signal.SIGTERM, _signal_handler)
         
         try:
-            max_workers = self.config["ai_max_workers"] + 1
+            workflow_workers = max(4, min(self.config["ai_max_workers"], 8))
             with concurrent.futures.ThreadPoolExecutor(
-                max_workers=max_workers, 
+                max_workers=workflow_workers,
                 thread_name_prefix='Workflow'
-            ) as executor:
-                self._main_loop(executor)
+            ) as workflow_executor, concurrent.futures.ThreadPoolExecutor(
+                max_workers=self.config["ai_max_workers"],
+                thread_name_prefix='LLMScreening'
+            ) as llm_executor:
+                self._main_loop(workflow_executor, llm_executor)
             
             if _shutdown_requested:
                 self.logger.info("⏹️ Workflow stopped by user request.")
@@ -382,7 +423,8 @@ class SearchWorkflow:
             signal.signal(signal.SIGTERM, original_term_handler)
             self._finalize()
     
-    def _main_loop(self, executor: concurrent.futures.ThreadPoolExecutor) -> None:
+    def _main_loop(self, workflow_executor: concurrent.futures.ThreadPoolExecutor,
+                   llm_executor: concurrent.futures.ThreadPoolExecutor) -> None:
         """主循环"""
         # 加载数据
         self.state.load_pmids()
@@ -395,10 +437,18 @@ class SearchWorkflow:
         
         # 初始化或加载评分标准和检索式
         if not self.state.is_continuing:
-            self._generate_initial_criteria_and_query(executor)
+            self._generate_initial_criteria_and_query(workflow_executor)
         else:
             if not self.state.load_existing_project(self.user_query):
                 return
+            try:
+                self._ensure_embedding_query_vector(workflow_executor)
+            except Exception as error:
+                self.logger.error(
+                    f"❌ Embedding query vector preparation failed; disabling embedding prefilter: {error}",
+                    exc_info=True
+                )
+                self._disable_embedding_prefilter()
         
         # 状态变量
         query_generation_future = None
@@ -447,7 +497,7 @@ class SearchWorkflow:
                 # 批量处理
                 if new_pmids:
                     goal_achieved, query_generation_future = self._process_batches(
-                        new_pmids, executor, current_round, query_generation_future
+                        new_pmids, workflow_executor, llm_executor, current_round, query_generation_future
                     )
                     if goal_achieved:
                         return
@@ -510,7 +560,7 @@ class SearchWorkflow:
 
             # 批量处理
             goal_achieved, query_generation_future = self._process_batches(
-                new_pmids, executor, current_round, query_generation_future
+                new_pmids, workflow_executor, llm_executor, current_round, query_generation_future
             )
 
             if goal_achieved:
@@ -565,15 +615,16 @@ class SearchWorkflow:
     def _generate_initial_criteria_and_query(self, executor) -> None:
         """
         并行生成初始评分标准和检索式，并优化执行顺序：
-        1. 并行启动：评分标准生成 + 检索式生成
+        1. 并行启动：评分标准生成 + 检索式生成 + Embedding Query Core 生成
         2. 检索式完成 → 立即 esearch + efetch (不等评分标准)
         3. 保存检索式 MD
-        4. 等待评分标准完成 → 保存评分标准 MD
-        5. 返回，准备开始筛选
+        4. 等待评分标准和 Embedding Query Core 完成并保存
+        5. 生成 Embedding 查询向量
+        6. 返回，准备开始筛选
         """
         self.logger.info("3️⃣ Starting parallel generation of scoring criteria and initial query...")
 
-        # 并行启动两个 AI 任务
+        # 并行启动 AI 任务
         criteria_future = executor.submit(
             self.ai_client.generate_scoring_criteria,
             self.user_query,
@@ -584,6 +635,12 @@ class SearchWorkflow:
             self.user_query,
             1
         )
+        embedding_query_core_future = None
+        if self._embedding_is_enabled():
+            embedding_query_core_future = executor.submit(
+                self.ai_client.generate_embedding_query_core,
+                self.user_query
+            )
 
         # 等待检索式完成（通常比评分标准快）
         self.logger.info("4️⃣ Waiting for initial search query...")
@@ -645,8 +702,61 @@ class SearchWorkflow:
         self.state.save_scoring_criteria(scoring_criteria, self.user_query)
         self.logger.info("   - ✅ Scoring criteria generated and saved")
 
-    def _process_batches(self, new_pmids: List[str], executor, current_round: int,
-                         query_future) -> tuple:
+        if embedding_query_core_future:
+            self.logger.info("6️⃣ Waiting for embedding query core...")
+            try:
+                embedding_query_core = embedding_query_core_future.result().strip()
+                self.state.save_embedding_query_core(embedding_query_core, self.user_query)
+                self.logger.info("   - ✅ Embedding query core generated and saved")
+                self._ensure_embedding_query_vector(executor)
+            except Exception as error:
+                self.logger.error(
+                    f"❌ Embedding query core/vector preparation failed; disabling embedding prefilter: {error}",
+                    exc_info=True
+                )
+                self._disable_embedding_prefilter()
+
+    def _embedding_is_enabled(self) -> bool:
+        """检查本任务是否启用 Embedding 预筛。"""
+        return bool(
+            self.config.get("embedding_enabled", True)
+            and self.embedding_provider is not None
+            and self.embedding_pipeline is not None
+        )
+
+    def _disable_embedding_prefilter(self) -> None:
+        """关闭本任务的 Embedding 预筛，保留原 LLM 直筛路径。"""
+        self.embedding_provider = None
+        self.embedding_pipeline = None
+        self.embedding_query_vector = None
+
+    def _ensure_embedding_query_vector(self, executor=None) -> None:
+        """确保 Embedding Query Core 和查询向量已准备好。"""
+        if not self._embedding_is_enabled():
+            return
+        if self.embedding_query_vector:
+            return
+
+        embedding_query_core = (self.state.embedding_query_core or "").strip()
+        if not embedding_query_core:
+            embedding_query_core = self.state.load_embedding_query_core().strip()
+        if not embedding_query_core:
+            self.logger.info("   - 🧭 Embedding query core missing; generating now...")
+            if executor:
+                embedding_query_core = executor.submit(
+                    self.ai_client.generate_embedding_query_core,
+                    self.user_query
+                ).result().strip()
+            else:
+                embedding_query_core = self.ai_client.generate_embedding_query_core(self.user_query).strip()
+            self.state.save_embedding_query_core(embedding_query_core, self.user_query)
+
+        self.logger.info("   - 🧭 Embedding query vector generation started...")
+        self.embedding_query_vector = self.embedding_provider.embed_query(embedding_query_core)
+        self.logger.info(f"   - ✅ Embedding query vector ready ({len(self.embedding_query_vector)} dimensions)")
+
+    def _process_batches(self, new_pmids: List[str], workflow_executor, llm_executor,
+                         current_round: int, query_future) -> tuple:
         """
         批量处理 PMIDs
 
@@ -713,7 +823,7 @@ class SearchWorkflow:
             # 预生成下一轮检索式
             if is_last_batch and current_round < self.config["max_refinement_attempts"]:
                 self.logger.info(f"⚡ Starting pre-generation of the next query...")
-                query_future = executor.submit(
+                query_future = workflow_executor.submit(
                     self.ai_client.refine_pubmed_query,
                     self.user_query,
                     self.state.current_query,
@@ -824,11 +934,16 @@ class SearchWorkflow:
                 next_batch_end = min(current_position + normal_batch_size, len(new_pmids))
                 next_pmids = new_pmids[next_batch_start:next_batch_end]
                 self.logger.info(f"  ⚡ Starting Europe PMC prefetch for batch {i+2}/{total_batches} ({len(next_pmids)} PMIDs)...")
-                prefetch_future = executor.submit(self.europepmc_client.fetch_by_pmids, next_pmids)
+                prefetch_future = workflow_executor.submit(self.europepmc_client.fetch_by_pmids, next_pmids)
                 prefetch_batch_index = i + 1
 
-            # 筛选文献（使用控制器支持早期停止）
-            screened = self._screen_batch(articles_in_batch, executor, current_round, controller)
+            # 筛选文献（Embedding 预筛可选，最终仍由 LLM 精筛）
+            screened = self._screen_articles_with_optional_embedding(
+                articles_in_batch,
+                llm_executor,
+                current_round,
+                controller
+            )
 
             # 持久化
             if screened:
@@ -865,7 +980,7 @@ class SearchWorkflow:
                 buffered_pmids = self.pmid_buffer.get_all_and_clear()
                 if buffered_pmids:
                     # 🚀 异步启动 PubMed efetch，不等待结果
-                    pubmed_supplement_future = executor.submit(
+                    pubmed_supplement_future = workflow_executor.submit(
                         self.pubmed_client.efetch_by_pmids, buffered_pmids
                     )
                     self.logger.info(f"  ⚡ PubMed efetch started for {len(buffered_pmids)} PMIDs (running in background)")
@@ -891,7 +1006,7 @@ class SearchWorkflow:
 
         # 🚀 在所有批次结束后，处理异步 PubMed 补充结果（如果有）
         if pubmed_supplement_future:
-            self._process_pubmed_supplement_result(pubmed_supplement_future, executor, controller)
+            self._process_pubmed_supplement_result(pubmed_supplement_future, llm_executor, controller)
             
         self.logger.info(f"🏁 All batches for current query complete.")
         return False, query_future
@@ -1086,7 +1201,12 @@ class SearchWorkflow:
                 articles_with_abstract = filtered_articles
             
             # AI 筛选
-            screened = self._screen_batch(articles_with_abstract, executor, 0, controller)
+            screened = self._screen_articles_with_optional_embedding(
+                articles_with_abstract,
+                executor,
+                0,
+                controller
+            )
             
             if screened:
                 self.state.add_articles(screened)
@@ -1230,7 +1350,12 @@ class SearchWorkflow:
                 articles_with_abstract = filtered_articles
             
             # AI 筛选
-            screened = self._screen_batch(articles_with_abstract, executor, 0, controller)
+            screened = self._screen_articles_with_optional_embedding(
+                articles_with_abstract,
+                executor,
+                0,
+                controller
+            )
             
             if screened:
                 self.state.add_articles(screened)
@@ -1252,6 +1377,38 @@ class SearchWorkflow:
         except Exception as e:
             self.logger.error(f"❌ PubMed supplement result processing failed: {e}")
             # 不抛出异常，继续主流程
+
+    def _screen_articles_with_optional_embedding(self, articles: List[dict], executor, current_round: int,
+                                                 controller: ScreeningController) -> List[dict]:
+        """Route articles through embedding prefilter when enabled, otherwise direct LLM screening."""
+        if not self._embedding_is_enabled():
+            return self._screen_batch(articles, executor, current_round, controller)
+
+        try:
+            self._ensure_embedding_query_vector()
+            if not self.embedding_query_vector:
+                raise RuntimeError("Embedding query vector is empty")
+
+            screened = self.embedding_pipeline.screen_articles(
+                articles=articles,
+                query_vector=self.embedding_query_vector,
+                llm_executor=executor,
+                user_query=self.user_query,
+                ai_client=self.ai_client,
+                scoring_criteria=self.state.scoring_criteria,
+                current_round=current_round,
+                language_config=self.language_config,
+                controller=controller,
+            )
+            self.state.update_embedding_prefilter_stats(self.embedding_pipeline.last_stats)
+            return screened
+        except Exception as error:
+            self.logger.error(
+                f"❌ Embedding prefilter failed, falling back to direct LLM screening for this batch: {error}",
+                exc_info=True
+            )
+            self._disable_embedding_prefilter()
+            return self._screen_batch(articles, executor, current_round, controller)
 
     def _screen_batch(self, articles: List[dict], executor, current_round: int,
                        controller: ScreeningController) -> List[dict]:
@@ -1573,5 +1730,3 @@ class SearchWorkflow:
         except Exception as e:
             self.logger.error(f"❌ Finalize files failed: {e}")
             raise
-
-
