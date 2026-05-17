@@ -27,6 +27,7 @@ class WorkflowState:
         self.screened_articles: List[dict] = []
         self.current_round: int = 0
         self.scoring_criteria: str = ""
+        self.embedding_query_core: str = ""
         self.is_continuing: bool = False
 
         # 核心参数
@@ -48,6 +49,8 @@ class WorkflowState:
         self.result_dir: str = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "search_result")
         self.log_dir: str = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
         self.criteria_file: str = ""
+        self.embedding_query_core_file: str = ""
+        self.embedding_prefilter_file: str = ""
         self.query_file: str = ""
         self.pmid_file: str = ""
         self.excel_file: str = ""
@@ -64,6 +67,18 @@ class WorkflowState:
             "total_no_issn": 0,
             "total_not_found": 0,
             "total_filtered_out": 0
+        }
+
+        self.embedding_prefilter_stats: dict = {
+            "total_before_embedding": 0,
+            "total_valid_text": 0,
+            "total_passed": 0,
+            "total_filtered_out": 0,
+            "total_errors": 0,
+            "total_embedding_batches": 0,
+            "embedding_batch_latencies": [],
+            "avg_embedding_batch_latency": 0.0,
+            "p95_embedding_batch_latency": 0.0,
         }
         
         # 会话统计（用于区分之前加载的和本次新增的）
@@ -103,6 +118,8 @@ class WorkflowState:
 
         # 设置文件路径
         self.criteria_file = os.path.join(self.result_dir, f"{prefix}_scoring_criteria.md")
+        self.embedding_query_core_file = os.path.join(self.result_dir, f"{prefix}_embedding_query_core.md")
+        self.embedding_prefilter_file = os.path.join(self.result_dir, f"{prefix}_embedding_prefilter.csv")
         self.query_file = os.path.join(self.result_dir, f"{prefix}_search_queries.md")
         self.pmid_file = os.path.join(self.result_dir, f"{prefix}_pmids.csv")
         self.excel_file = os.path.join(self.result_dir, f"{prefix}_results.xlsx")
@@ -131,6 +148,41 @@ class WorkflowState:
             self.scoring_criteria = scoring_criteria
         except IOError as e:
             logging.error(f"❌ Failed to save scoring criteria: {e}")
+
+    def save_embedding_query_core(self, embedding_query_core: str, user_query: str) -> None:
+        """保存 Embedding Query Core"""
+        try:
+            with open(self.embedding_query_core_file, 'w', encoding='utf-8') as f:
+                f.write("# Embedding Query Core for Literature Matching\n\n")
+                f.write(f"**User Query**: {user_query}\n\n")
+                f.write("---\n\n")
+                f.write(embedding_query_core)
+                f.write(f"\n\n---\n\n*Generated at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n")
+            logging.info(f"🧭 Embedding query core saved to {self.embedding_query_core_file}.")
+            self.embedding_query_core = embedding_query_core
+        except IOError as e:
+            logging.error(f"❌ Failed to save embedding query core: {e}")
+
+    def load_embedding_query_core(self) -> str:
+        """加载已保存的 Embedding Query Core正文。"""
+        if not self.embedding_query_core_file or not os.path.exists(self.embedding_query_core_file):
+            return ""
+        try:
+            with open(self.embedding_query_core_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            parts = re.split(r"\n---\n", content, maxsplit=2)
+            if len(parts) >= 2:
+                core = parts[1].strip()
+            else:
+                core = content.strip()
+            core = re.sub(r"\n---\n.*$", "", core, flags=re.DOTALL).strip()
+            self.embedding_query_core = core
+            if core:
+                logging.info(f"   - 🧭 Loaded embedding query core from {self.embedding_query_core_file}.")
+            return core
+        except (IOError, Exception) as e:
+            logging.warning(f"   - ⚠️ Could not load embedding query core: {e}.")
+            return ""
     
     def save_search_query(self, search_query: str, user_query: str, 
                           round_number: int, total_found: int = 0, new_found: int = 0) -> None:
@@ -330,6 +382,27 @@ class WorkflowState:
         self.journal_filter_stats["total_not_found"] += stats.get("not_found", 0)
         self.journal_filter_stats["total_filtered_out"] += stats.get("filtered_out", 0)
 
+    def update_embedding_prefilter_stats(self, stats: dict) -> None:
+        """更新 Embedding 预筛统计。"""
+        if not stats:
+            return
+
+        self.embedding_prefilter_stats["total_before_embedding"] += stats.get("before_embedding", 0)
+        self.embedding_prefilter_stats["total_valid_text"] += stats.get("valid_text", 0)
+        self.embedding_prefilter_stats["total_passed"] += stats.get("passed", 0)
+        self.embedding_prefilter_stats["total_filtered_out"] += stats.get("filtered_out", 0)
+        self.embedding_prefilter_stats["total_errors"] += stats.get("errors", 0)
+        self.embedding_prefilter_stats["total_embedding_batches"] += stats.get("embedding_batches", 0)
+
+        latencies = stats.get("embedding_batch_latencies") or []
+        if latencies:
+            stored = self.embedding_prefilter_stats["embedding_batch_latencies"]
+            stored.extend(float(value) for value in latencies)
+            sorted_latencies = sorted(stored)
+            self.embedding_prefilter_stats["avg_embedding_batch_latency"] = sum(stored) / len(stored)
+            p95_index = min(len(sorted_latencies) - 1, int(len(sorted_latencies) * 0.95))
+            self.embedding_prefilter_stats["p95_embedding_batch_latency"] = sorted_latencies[p95_index]
+
     def get_journal_filter_stats(self) -> dict:
         """获取期刊过滤统计"""
         return self.journal_filter_stats
@@ -349,6 +422,7 @@ class WorkflowState:
             # 加载评分标准
             with open(self.criteria_file, 'r', encoding='utf-8') as f:
                 self.scoring_criteria = f.read()
+            self.load_embedding_query_core()
 
             # 加载最后的检索式
             with open(self.query_file, 'r', encoding='utf-8') as f:
@@ -369,4 +443,3 @@ class WorkflowState:
         except (FileNotFoundError, Exception) as e:
             logging.error(f"❌ Critical error loading project files: {e}. Cannot continue.")
             return False
-

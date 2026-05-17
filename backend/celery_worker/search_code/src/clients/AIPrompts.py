@@ -1,5 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import List
 import threading
 import random
@@ -1702,8 +1703,17 @@ class ClientPrompts:
 *   **0分 (边缘相关):** ...
 *   **-1分 (完全不相关):** ...
 
-**重要提醒**: 请确保评分标准具体、可操作，能够让AI模型在后续筛选中保持一致的判断。每个评分等级的描述应该清晰区分，避免模糊地带。
-"""
+	**重要提醒**: 请确保评分标准具体、可操作，能够让AI模型在后续筛选中保持一致的判断。每个评分等级的描述应该清晰区分，避免模糊地带。
+	"""
+
+    @staticmethod
+    def get_generate_embedding_query_core_prompt(user_query: str) -> str:
+        """Load the backend Embedding Query Core prompt template."""
+        prompt_path = Path(__file__).resolve().parent.parent / "prompts" / "generate_embedding_query_core_prompt.md"
+        if not prompt_path.exists():
+            raise FileNotFoundError(f"Embedding query core prompt file not found: {prompt_path}")
+        template = prompt_path.read_text(encoding="utf-8")
+        return template.replace("{user_query}", user_query)
 
     @staticmethod
     def get_extract_article_info_prompt(abstract: str, user_query: str = "", scoring_criteria: str = "", current_results_count: int = 0, attempt_number: int = 1, language_config: dict = None) -> str:
@@ -2044,6 +2054,17 @@ class BaseClient(ABC):
             prompt, 
             use_pro_model=True, 
             task_description=task_description
+        )
+
+    def generate_embedding_query_core(self, user_query: str) -> str:
+        """Generate a compact English query core for embedding retrieval."""
+        prompt = ClientPrompts.get_generate_embedding_query_core_prompt(user_query)
+        task_description = "Embedding Query Core Generation"
+        return self._generate_content_with_retry(
+            prompt,
+            use_pro_model=False,
+            task_description=task_description,
+            max_output_tokens=2048
         )
 
     def extract_article_info(self, abstract: str, user_query: str = "", scoring_criteria: str = "", current_results_count: int = 0, attempt_number: int = 1, language_config: dict = None, pmid: str = "N/A") -> str:

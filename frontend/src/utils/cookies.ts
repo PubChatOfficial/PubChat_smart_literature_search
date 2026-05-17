@@ -372,17 +372,16 @@ export const Cookies = {
   /**
    * AI 接口配置（模型 + API Key）
    */
-  getAiApiModel: (): { preset: string; customModel: string; apiKey: string } | null => {
-    return getCookieAsJson<{ preset: string; customModel: string; apiKey: string }>(COOKIE_KEYS.AI_API_MODEL);
+  getAiApiModel: (): { preset: string; customModel: string; apiKey: string; apiKeysByPreset?: Record<string, string> } | null => {
+    return getCookieAsJson<{ preset: string; customModel: string; apiKey: string; apiKeysByPreset?: Record<string, string> }>(COOKIE_KEYS.AI_API_MODEL);
   },
 
   setAiApiModel: (
-    data: { preset: string; customModel: string; apiKey: string },
+    data: { preset: string; customModel: string; apiKey: string; apiKeysByPreset?: Record<string, string> },
     options?: CookieOptions
   ): void => {
     setCookieAsJson(COOKIE_KEYS.AI_API_MODEL, data, options);
   },
 
 };
-
 

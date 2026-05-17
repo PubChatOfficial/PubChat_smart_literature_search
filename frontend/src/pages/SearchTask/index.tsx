@@ -14,25 +14,41 @@ import '@/styles/MobileOutputLanguage.css'; // Mobile layout for output language
 import { useToast } from '@/components/Toast/ToastContext';
 
 const AI_MODEL_CUSTOM = '__custom__';
-const DEFAULT_AI_MODEL = 'gemini-2.5-pro';
+const AI_MODEL_GOOGLE_GEMINI = 'google_gemini';
+const AI_MODEL_OPENROUTER_GEMINI = 'openrouter_gemini';
+const DEFAULT_AI_MODEL = AI_MODEL_GOOGLE_GEMINI;
 
 const AI_MODEL_OPTIONS: ReadonlyArray<{
   value: string;
   labelEn: string;
   labelZh: string;
 }> = [
-  // { value: 'gpt-4o', labelEn: 'OpenAI · gpt-4o', labelZh: 'OpenAI · gpt-4o' },
-  // { value: 'gpt-4o-mini', labelEn: 'OpenAI · gpt-4o-mini', labelZh: 'OpenAI · gpt-4o-mini' },
-  // { value: 'gpt-4-turbo', labelEn: 'OpenAI · gpt-4-turbo', labelZh: 'OpenAI · gpt-4-turbo' },
-  { value: 'google', labelEn: 'Google · gemini', labelZh: 'Google · gemini' },
-  // { value: 'deepseek-chat', labelEn: 'DeepSeek · deepseek-chat', labelZh: 'DeepSeek · deepseek-chat' },
-  // {
-  //   value: 'claude-3-5-sonnet-20241022',
-  //   labelEn: 'Anthropic · claude-3-5-sonnet',
-  //   labelZh: 'Anthropic · claude-3-5-sonnet',
-  // },
-  // { value: AI_MODEL_CUSTOM, labelEn: 'Custom…', labelZh: '自定义…' },
+  { value: AI_MODEL_GOOGLE_GEMINI, labelEn: 'Google · Gemini', labelZh: 'Google · Gemini' },
+  { value: AI_MODEL_OPENROUTER_GEMINI, labelEn: 'OpenRouter · Gemini', labelZh: 'OpenRouter · Gemini' },
 ];
+
+const normalizeAiModelPreset = (preset?: string) => {
+  if (!preset || preset === 'google' || preset === 'gemini-2.5-pro') {
+    return AI_MODEL_GOOGLE_GEMINI;
+  }
+  return AI_MODEL_OPTIONS.some((opt) => opt.value === preset) ? preset : DEFAULT_AI_MODEL;
+};
+
+type AiApiCookie = {
+  preset?: string;
+  customModel?: string;
+  apiKey?: string;
+  apiKeysByPreset?: Record<string, string>;
+};
+
+const getSavedAiApiKeysByPreset = (saved: AiApiCookie | null): Record<string, string> => {
+  const keys = { ...(saved?.apiKeysByPreset || {}) };
+  const preset = normalizeAiModelPreset(saved?.preset);
+  if (saved?.apiKey && !keys[preset]) {
+    keys[preset] = saved.apiKey;
+  }
+  return keys;
+};
 
 export const LiteratureSearchTask: React.FC = () => {
   const { theme } = useTheme();
@@ -116,17 +132,15 @@ export const LiteratureSearchTask: React.FC = () => {
 
   const [aiModelPreset, setAiModelPreset] = useState(() => {
     const saved = Cookies.getAiApiModel();
-    const savedPreset = saved?.preset;
-    const hasSaved = !!savedPreset && AI_MODEL_OPTIONS.some((opt) => opt.value === savedPreset);
-    return hasSaved ? (savedPreset as string) : DEFAULT_AI_MODEL;
+    return normalizeAiModelPreset(saved?.preset);
   });
   const [aiCustomModel, setAiCustomModel] = useState(() => {
     const saved = Cookies.getAiApiModel();
     return saved?.customModel || '';
   });
-  const [aiApiKey, setAiApiKey] = useState(() => {
+  const [aiApiKeysByPreset, setAiApiKeysByPreset] = useState<Record<string, string>>(() => {
     const saved = Cookies.getAiApiModel();
-    return saved?.apiKey || '';
+    return getSavedAiApiKeysByPreset(saved);
   });
 
   const [aiModelMenuOpen, setAiModelMenuOpen] = useState(false);
@@ -172,8 +186,31 @@ export const LiteratureSearchTask: React.FC = () => {
   }, [maxRounds, autoStopArticles]);
 
   useEffect(() => {
-    Cookies.setAiApiModel({ preset: aiModelPreset, customModel: aiCustomModel, apiKey: aiApiKey });
-  }, [aiModelPreset, aiCustomModel, aiApiKey]);
+    Cookies.setAiApiModel({
+      preset: aiModelPreset,
+      customModel: aiCustomModel,
+      apiKey: aiApiKeysByPreset[aiModelPreset] || '',
+      apiKeysByPreset: aiApiKeysByPreset,
+    });
+  }, [aiModelPreset, aiCustomModel, aiApiKeysByPreset]);
+
+  const selectedAiModelOption =
+    AI_MODEL_OPTIONS.find((opt) => opt.value === aiModelPreset) || AI_MODEL_OPTIONS[0];
+  const isGoogleGeminiSelected = aiModelPreset === AI_MODEL_GOOGLE_GEMINI;
+  const aiApiKey = aiApiKeysByPreset[aiModelPreset] || '';
+  const setCurrentAiApiKey = (value: string) => {
+    setAiApiKeysByPreset((prev) => ({
+      ...prev,
+      [aiModelPreset]: value,
+    }));
+  };
+  const apiKeyPlaceholder = isGoogleGeminiSelected
+    ? theme.language === 'en'
+      ? 'Your Google Gemini API key'
+      : '填写 Google Gemini API 密钥'
+    : theme.language === 'en'
+      ? 'Your OpenRouter API key'
+      : '填写 OpenRouter API 密钥';
 
   // Refs for range sliders
   const ifLeftRef = useRef<HTMLInputElement>(null);
@@ -416,8 +453,8 @@ export const LiteratureSearchTask: React.FC = () => {
   const resetAiApiConfig = () => {
     setAiModelPreset(DEFAULT_AI_MODEL);
     setAiCustomModel('');
-    setAiApiKey('');
-    Cookies.setAiApiModel({ preset: DEFAULT_AI_MODEL, customModel: '', apiKey: '' });
+    setAiApiKeysByPreset({});
+    Cookies.setAiApiModel({ preset: DEFAULT_AI_MODEL, customModel: '', apiKey: '', apiKeysByPreset: {} });
   };
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -462,6 +499,9 @@ export const LiteratureSearchTask: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
+                  const isComposing = e.nativeEvent.isComposing || e.keyCode === 229;
+                  if (isComposing) return;
+
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleSearch();
@@ -521,7 +561,7 @@ export const LiteratureSearchTask: React.FC = () => {
                         onClick={() => setAiModelMenuOpen((open) => !open)}
                       >
                         <span className="ai-model-dropdown-value">
-                          {theme.language === 'en' ? 'Google · gemini' : 'Google · gemini'}
+                          {theme.language === 'en' ? selectedAiModelOption.labelEn : selectedAiModelOption.labelZh}
                         </span>
                         <CaretDown
                           className={`ai-model-dropdown-chevron${aiModelMenuOpen ? ' is-open' : ''}`}
@@ -580,19 +620,19 @@ export const LiteratureSearchTask: React.FC = () => {
                       type="password"
                       className="form-input"
                       autoComplete="off"
-                      placeholder={
-                        theme.language === 'en' ? 'Your LLM provider API key' : '填写大模型服务商提供的 API Key'
-                      }
+                      placeholder={apiKeyPlaceholder}
                       value={aiApiKey}
-                      onChange={(e) => setAiApiKey(e.target.value)}
+                      onChange={(e) => setCurrentAiApiKey(e.target.value)}
                     />
                   </div>
                 </div>
-                <p className="note-text">
-                  {theme.language === 'en'
-                    ? 'Note: Please use Tier1 or above API tiers. For countries or regions that cannot use Google services, you need to use VPN, otherwise the service may be unavailable.'
-                    : '提示：API务必使用Tier1或以上等级的。对于无法使用Google服务的国家或地区需要使用VPN，否则会出现服务不可用的情况。'}
-                </p>
+                {isGoogleGeminiSelected && (
+                  <p className="note-text">
+                    {theme.language === 'en'
+                      ? 'Note: Please use Tier1 or above API tiers. For countries or regions that cannot use Google services, you need to use VPN, otherwise the service may be unavailable.'
+                      : '提示：API务必使用Tier1或以上等级的。对于无法使用Google服务的国家或地区需要使用VPN，否则会出现服务不可用的情况。'}
+                  </p>
+                )}
               </section>
 
               <section className="form-section section-box">
@@ -916,4 +956,3 @@ export const LiteratureSearchTask: React.FC = () => {
     </div >
   );
 };
-
