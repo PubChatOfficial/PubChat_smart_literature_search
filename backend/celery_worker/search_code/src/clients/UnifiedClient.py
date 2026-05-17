@@ -34,8 +34,8 @@ OPENROUTER_GEMINI_PRESETS = {"openrouter_gemini", "openrouter", "openrouter-gemi
 
 DEFAULT_GOOGLE_PRO_MODEL = "gemini-flash-lite-latest"
 DEFAULT_GOOGLE_FLASH_MODEL = "gemini-flash-lite-latest"
-DEFAULT_OPENROUTER_PRO_MODEL = "~google/gemini-flash-latest"
-DEFAULT_OPENROUTER_FLASH_MODEL = "~google/gemini-flash-latest"
+DEFAULT_OPENROUTER_PRO_MODEL = "google/gemini-3.1-flash-lite-preview"
+DEFAULT_OPENROUTER_FLASH_MODEL = "google/gemini-3.1-flash-lite-preview"
 DEFAULT_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 
