@@ -39,6 +39,7 @@ type AiApiCookie = {
   customModel?: string;
   apiKey?: string;
   apiKeysByPreset?: Record<string, string>;
+  pubmedApiKey?: string;
 };
 
 const getSavedAiApiKeysByPreset = (saved: AiApiCookie | null): Record<string, string> => {
@@ -142,6 +143,10 @@ export const LiteratureSearchTask: React.FC = () => {
     const saved = Cookies.getAiApiModel();
     return getSavedAiApiKeysByPreset(saved);
   });
+  const [pubmedApiKey, setPubmedApiKey] = useState(() => {
+    const saved = Cookies.getAiApiModel();
+    return saved?.pubmedApiKey || '';
+  });
 
   const [aiModelMenuOpen, setAiModelMenuOpen] = useState(false);
   const aiModelDropdownRef = useRef<HTMLDivElement>(null);
@@ -191,8 +196,9 @@ export const LiteratureSearchTask: React.FC = () => {
       customModel: aiCustomModel,
       apiKey: aiApiKeysByPreset[aiModelPreset] || '',
       apiKeysByPreset: aiApiKeysByPreset,
+      pubmedApiKey,
     });
-  }, [aiModelPreset, aiCustomModel, aiApiKeysByPreset]);
+  }, [aiModelPreset, aiCustomModel, aiApiKeysByPreset, pubmedApiKey]);
 
   const selectedAiModelOption =
     AI_MODEL_OPTIONS.find((opt) => opt.value === aiModelPreset) || AI_MODEL_OPTIONS[0];
@@ -211,6 +217,20 @@ export const LiteratureSearchTask: React.FC = () => {
     : theme.language === 'en'
       ? 'Your OpenRouter API key'
       : '填写 OpenRouter API 密钥';
+  const aiApiHelp = isGoogleGeminiSelected
+    ? {
+        href: 'https://mp.weixin.qq.com/s/OM9H5hzom2qF6v6q1p7m6w?scene=1&click_id=1',
+        label: theme.language === 'en' ? 'Gemini Tier1 API guide' : 'Gemini Tier1 API 获取教程',
+        text:
+          theme.language === 'en'
+            ? 'Google Gemini may now require prepaid billing before Tier1 access is available.'
+            : '目前 Gemini Tier1 可能需要预充值后才能使用。',
+      }
+    : {
+        href: 'https://openrouter.ai/workspaces/default/keys',
+        label: theme.language === 'en' ? 'OpenRouter API keys' : 'OpenRouter API Keys 页面',
+        text: theme.language === 'en' ? 'Open this page to copy your OpenRouter API key.' : '点开后可直接复制 OpenRouter API Key。',
+      };
 
   // Refs for range sliders
   const ifLeftRef = useRef<HTMLInputElement>(null);
@@ -342,6 +362,11 @@ export const LiteratureSearchTask: React.FC = () => {
       return;
     }
 
+    if (!pubmedApiKey.trim()) {
+      showError(theme.language === 'en' ? 'Please configure your PubMed API key' : '请先配置 PubMed API 密钥');
+      return;
+    }
+
     // Format Impact Factor
     let ifString = '';
     const ifLeft = impactFactor.left === 0 ? 0 : Math.round(impactFactor.left / 2);
@@ -390,6 +415,7 @@ export const LiteratureSearchTask: React.FC = () => {
     requestData.llm_config = {
       model: resolvedModel,
       api: [aiApiKey.trim()],
+      pubmed_api: pubmedApiKey.trim(),
     };
 
     try {
@@ -454,7 +480,8 @@ export const LiteratureSearchTask: React.FC = () => {
     setAiModelPreset(DEFAULT_AI_MODEL);
     setAiCustomModel('');
     setAiApiKeysByPreset({});
-    Cookies.setAiApiModel({ preset: DEFAULT_AI_MODEL, customModel: '', apiKey: '', apiKeysByPreset: {} });
+    setPubmedApiKey('');
+    Cookies.setAiApiModel({ preset: DEFAULT_AI_MODEL, customModel: '', apiKey: '', apiKeysByPreset: {}, pubmedApiKey: '' });
   };
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -531,7 +558,7 @@ export const LiteratureSearchTask: React.FC = () => {
               <section className="form-section section-box ai-api-config-section">
                 <div className="section-header">
                   <h3>
-                    {theme.language === 'en' ? 'AI API' : 'AI 接口配置'}
+                    {theme.language === 'en' ? 'API Configuration' : 'API 接口配置'}
                     <span className="required-dot" aria-hidden="true">*</span>
                   </h3>
                   <button
@@ -549,7 +576,7 @@ export const LiteratureSearchTask: React.FC = () => {
                 >
                   <div className="form-group">
                     <label>
-                      {theme.language === 'en' ? 'Model' : '模型'}
+                      {theme.language === 'en' ? 'AI provider & model' : 'AI厂商及模型'}
                       <span className="required-dot" aria-hidden="true">*</span>
                     </label>
                     <div className="ai-model-dropdown" ref={aiModelDropdownRef}>
@@ -593,6 +620,12 @@ export const LiteratureSearchTask: React.FC = () => {
                         </ul>
                       )}
                     </div>
+                    <p className="api-help-text">
+                      <a href={aiApiHelp.href} target="_blank" rel="noreferrer">
+                        {aiApiHelp.label}
+                      </a>
+                      <span>{aiApiHelp.text}</span>
+                    </p>
                   </div>
                   {/* {aiModelPreset === AI_MODEL_CUSTOM && (
                     <div className="form-group full-width">
@@ -613,7 +646,7 @@ export const LiteratureSearchTask: React.FC = () => {
                     className={`form-group${aiModelPreset === AI_MODEL_CUSTOM ? ' full-width' : ''}`}
                   >
                     <label>
-                      {theme.language === 'en' ? 'API key' : 'API 密钥'}
+                      {theme.language === 'en' ? 'AI API key' : 'AI API 秘钥'}
                       <span className="required-dot" aria-hidden="true">*</span>
                     </label>
                     <input
@@ -625,14 +658,33 @@ export const LiteratureSearchTask: React.FC = () => {
                       onChange={(e) => setCurrentAiApiKey(e.target.value)}
                     />
                   </div>
+                  <div className="form-group full-width">
+                    <label>
+                      {theme.language === 'en' ? 'PubMed API key' : 'PubMed API 密钥'}
+                      <span className="required-dot" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      autoComplete="off"
+                      placeholder={
+                        theme.language === 'en' ? 'Your NCBI PubMed API key' : '填写 NCBI PubMed API 密钥'
+                      }
+                      value={pubmedApiKey}
+                      onChange={(e) => setPubmedApiKey(e.target.value)}
+                    />
+                    <p className="api-help-text">
+                      <a href="https://account.ncbi.nlm.nih.gov/settings/" target="_blank" rel="noreferrer">
+                        {theme.language === 'en' ? 'NCBI account settings' : 'NCBI 账号设置'}
+                      </a>
+                      <span>
+                        {theme.language === 'en'
+                          ? 'Log in first, then get the API key near the bottom of the settings page.'
+                          : '需要先登录账号，再进入该页面底部获取 API Key。'}
+                      </span>
+                    </p>
+                  </div>
                 </div>
-                {isGoogleGeminiSelected && (
-                  <p className="note-text">
-                    {theme.language === 'en'
-                      ? 'Note: Please use Tier1 or above API tiers. For countries or regions that cannot use Google services, you need to use VPN, otherwise the service may be unavailable.'
-                      : '提示：API务必使用Tier1或以上等级的。对于无法使用Google服务的国家或地区需要使用VPN，否则会出现服务不可用的情况。'}
-                  </p>
-                )}
               </section>
 
               <section className="form-section section-box">

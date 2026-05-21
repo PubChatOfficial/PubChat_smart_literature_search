@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+import re
 import requests
 import threading
 from typing import Dict, Optional, List
@@ -98,11 +99,11 @@ class PubMedClient:
     """
     BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 
-    def __init__(self):
+    def __init__(self, api_keys=None):
         """
         Initializes the PubMed client.
 
-        支持从环境变量读取多个API密钥（用分号分隔）。
+        支持从用户任务配置或环境变量读取多个API密钥（用逗号、分号或换行分隔）。
         当遇到API错误时，自动切换到下一个API密钥。
 
         环境变量格式：
@@ -110,11 +111,29 @@ class PubMedClient:
         或
         PUBMED_API_KEY=key1
         """
-        api_keys = ["29563e85a140f011f08508d6d71c452e3d08","da361bdd993c85a319b6b8bf482f979dc508","9b0de3da446aabd777cb6825a77867197008","a1eb6228a2b76e101564b689bffc94f95508","1d9a1cfbe06b7202316651255afa71209208","9fc9e852f1648e302c5bcb2d5f8558d46408","fbf5ffab87c121c8eeaaa1c4278727299608"]
+        raw_api_keys = api_keys if api_keys is not None else os.getenv("PUBMED_API_KEY", "")
+        normalized_api_keys = self._normalize_api_keys(raw_api_keys)
 
-        self.api_key_manager = PubMedAPIKeyManager(api_keys)
-        self.api_key = self.api_key_manager.get_current_key()
-        logger.info(f"🚀 PubMed client initialized with {len(api_keys)} API key(s).")
+        self.api_key_manager = PubMedAPIKeyManager(normalized_api_keys) if normalized_api_keys else None
+        self.api_key = self.api_key_manager.get_current_key() if self.api_key_manager else None
+
+        if self.api_key_manager:
+            logger.info(f"🚀 PubMed client initialized with {len(normalized_api_keys)} user-provided API key(s).")
+        else:
+            logger.warning("⚠️ PubMed client initialized without an API key; NCBI requests will use the lower unauthenticated rate limit.")
+
+    @staticmethod
+    def _normalize_api_keys(api_keys) -> List[str]:
+        if isinstance(api_keys, str):
+            return [item.strip() for item in re.split(r"[,;\s]+", api_keys) if item.strip()]
+        if isinstance(api_keys, (list, tuple)):
+            keys = []
+            for item in api_keys:
+                if item is None:
+                    continue
+                keys.extend(PubMedClient._normalize_api_keys(str(item)))
+            return keys
+        return []
 
     def esearch(self, term: str, retmax: str = "100000") -> Optional[Dict]:
         """

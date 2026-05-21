@@ -34,7 +34,7 @@ celery_app.conf.update(
 )
 
 @celery_app.task(name='search_workflow.run_search', queue='search_queue')
-def run_search(task_id):
+def run_search(task_id, pubmed_api=''):
     logger.info(f"Received search task: {task_id}")
     conn = None
     try:
@@ -80,7 +80,8 @@ def run_search(task_id):
 
             llm_config = {
                 "model": task.get('model', ''),
-                "api": task.get('api', '')
+                "api": task.get('api', ''),
+                "pubmed_api": pubmed_api or task.get('pubmed_api', '')
             }
 
             # Update status to running

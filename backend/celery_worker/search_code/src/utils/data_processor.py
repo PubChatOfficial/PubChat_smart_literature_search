@@ -12,55 +12,41 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 # Configure the logger for this module
 logger = logging.getLogger(__name__)
 
-# 🔄 Unpaywall Email 轮换管理器
+# 🔄 Unpaywall 随机邮箱管理器
 class UnpaywallEmailManager:
     """
-    Unpaywall API Email 轮换管理器
-    
-    Unpaywall API 限制：每个 email 每天 100,000 次请求
-    通过多 email 轮换突破限制，支持高并发场景
+    Unpaywall API Email 管理器。
+
+    不再依赖预置的 100 个固定邮箱；每次任务生成一个随机邮箱格式字符串。
     """
     _instance = None
-    _emails = []
-    # _current_index = 0
-    
+    _email = None
+
     @classmethod
-    def initialize(cls, emails_str: str = None):
+    def initialize(cls):
         """
-        初始化 email 列表
-        
-        Args:
-            emails_str: 逗号分隔的 email 列表（从环境变量读取）
+        初始化任务级随机邮箱
         """
-        import os
-        if emails_str is None:
-            emails_str = os.getenv("UNPAYWALL_EMAILS", "research@pubchat.org")
-        
-        cls._emails = [e.strip() for e in emails_str.split(",") if e.strip()]
-        
-        if not cls._emails:
-            cls._emails = ["research@pubchat.org"]
-        
-        logger.info(f"📧 Unpaywall Email Manager initialized with {len(cls._emails)} email(s)")
-    
+        import secrets
+
+        local_part = secrets.token_hex(10)
+        domain_name = secrets.token_hex(6)
+        tld = secrets.choice(["com", "org", "net", "io", "dev"])
+        cls._email = f"{local_part}@{domain_name}.{tld}"
+        logger.info("📧 Unpaywall Email Manager initialized with a random email")
+
     @classmethod
     def get_next_email(cls) -> str:
         """
-        获取下一个 email（轮换）
-        
+        获取当前任务的随机 email
+
         Returns:
             用于 Unpaywall API 的 email
         """
-        import random
-
-        if not cls._emails:
+        if not cls._email:
             cls.initialize()
 
-        random_email = random.choice(cls._emails)   
-        
-        # email = cls._emails[cls._current_index]
-        # cls._current_index = (cls._current_index + 1) % len(cls._emails)
-        return random_email
+        return cls._email
 
 # Excel 非法字符正则表达式（控制字符，除了 Tab, LF, CR）
 ILLEGAL_CHARACTERS_RE = re.compile(

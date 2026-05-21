@@ -81,10 +81,11 @@ async def create_search_task():
             
             # 3. Create Task Record
             # Extract fields from nested structures
-            s_settings = data.get('search_settings', {})
-            s_filters = data.get('search_filters', {})
-            j_filters = data.get('journal_filters', {})
-            ai_filters = data.get('llm_config', {})
+            s_settings = data.get('search_settings') or {}
+            s_filters = data.get('search_filters') or {}
+            j_filters = data.get('journal_filters') or {}
+            ai_filters = data.get('llm_config') or {}
+            pubmed_api = ai_filters.get('pubmed_api') or ai_filters.get('pubmed_api_key') or ''
 
             insert_query = """
                 INSERT INTO "userSchema"."tasks" (
@@ -127,7 +128,7 @@ async def create_search_task():
             # 4. Push to Celery
             # We send the task_id. The worker will likely need to fetch the task from DB or we pass parameters.
             # Passing just ID is cleaner if worker has DB access.
-            async_result = celery_app.send_task('search_workflow.run_search', args=[str(task_id)], queue='search_queue')
+            async_result = celery_app.send_task('search_workflow.run_search', args=[str(task_id), pubmed_api], queue='search_queue')
             celery_task_id = async_result.id
 
             # Store celery_task_id in Redis with 30m expiration
