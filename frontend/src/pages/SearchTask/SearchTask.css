@@ -23,7 +23,7 @@
   height: 100%;
 }
 
-/* AI 接口配置：与下方「检索参数设置」等 section-box + grid-form 一致 */
+/* API 接口配置：与下方「检索参数设置」等 section-box + grid-form 一致 */
 .section-box.ai-api-config-section {
   overflow: visible;
 }
@@ -37,8 +37,8 @@
 }
 
 .grid-form.ai-api-limits {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: end;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
 }
 
 .grid-form.ai-api-limits.has-custom {
@@ -47,6 +47,27 @@
 
 .grid-form.ai-api-limits .form-group.full-width {
   grid-column: 1 / -1;
+}
+
+.api-help-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: baseline;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.api-help-text a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.api-help-text a:hover {
+  text-decoration: underline;
 }
 
 /* 自定义模型下拉：避免原生 <select> 在 macOS 上的系统弹层样式 */

@@ -27,7 +27,8 @@ from .clients.PubmedClient import PubMedClient
 from .clients.EuropePMCClient import EuropePMCClient
 from .utils.data_processor import (
     parse_pubmed_xml, parse_europepmc_json, generate_formatted_excel, generate_ris_file,
-    filter_articles_by_journal, get_journal_filter_display, enrich_articles_with_journal_info
+    filter_articles_by_journal, get_journal_filter_display, enrich_articles_with_journal_info,
+    UnpaywallEmailManager
 )
 from .utils.pmid_buffer import PMIDBuffer
 from .clients import UnifiedAIClient
@@ -371,7 +372,11 @@ class SearchWorkflow:
             self.logger.info("   - 🧭 Embedding prefilter disabled; articles will go directly to LLM screening")
 
         # PubMed 客户端（用于 esearch 和 fallback）
-        self.pubmed_client = PubMedClient()
+        pubmed_api_keys = (llm_config or {}).get("pubmed_api") or (llm_config or {}).get("pubmed_api_key")
+        self.pubmed_client = PubMedClient(api_keys=pubmed_api_keys)
+
+        # Unpaywall 客户端使用任务级随机邮箱
+        UnpaywallEmailManager.initialize()
         
         # Europe PMC 客户端（用于主 efetch）
         self.europepmc_client = EuropePMCClient()
