@@ -22,7 +22,7 @@ export interface JournalFilters {
 export interface LlmConfig {
     model?: string;
     api?: string[];
-    pubmed_api?: string;
+    pubmed_api?: string[];
 }
 
 export interface SearchTaskRequest {

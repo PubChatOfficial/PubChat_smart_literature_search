@@ -77,7 +77,8 @@ class SearchWorkflow:
             outputlanguae = "zh"
             llm_config = {
                 "model": '',
-                "api": ''
+                "api": '',
+                "pubmed_api": ''
             }
             search_settings = {
                         "max_refinement_attempts": 30,
@@ -372,8 +373,9 @@ class SearchWorkflow:
             self.logger.info("   - 🧭 Embedding prefilter disabled; articles will go directly to LLM screening")
 
         # PubMed 客户端（用于 esearch 和 fallback）
-        pubmed_api_keys = (llm_config or {}).get("pubmed_api") or (llm_config or {}).get("pubmed_api_key")
+        pubmed_api_keys = (llm_config or {}).get("pubmed_api") 
         self.pubmed_client = PubMedClient(api_keys=pubmed_api_keys)
+        self.logger.info(f"   - 🧭 PubMed client initialized with API key(s) : {pubmed_api_keys} ")
 
         # Unpaywall 客户端使用任务级随机邮箱
         UnpaywallEmailManager.initialize()

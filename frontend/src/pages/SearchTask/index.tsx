@@ -415,7 +415,7 @@ export const LiteratureSearchTask: React.FC = () => {
     requestData.llm_config = {
       model: resolvedModel,
       api: [aiApiKey.trim()],
-      pubmed_api: pubmedApiKey.trim(),
+      pubmed_api: [pubmedApiKey.trim()]
     };
 
     try {

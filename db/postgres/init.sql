@@ -57,6 +57,7 @@ CREATE TABLE "userSchema".tasks (
 	status varchar DEFAULT 'pending'::character varying NULL,
 	model varchar NULL,
 	api _text NULL,
+	pubmed_api _text NULL,
 	CONSTRAINT tasks_pk PRIMARY KEY (id)
 );
 

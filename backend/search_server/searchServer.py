@@ -85,19 +85,19 @@ async def create_search_task():
             s_filters = data.get('search_filters') or {}
             j_filters = data.get('journal_filters') or {}
             ai_filters = data.get('llm_config') or {}
-            pubmed_api = ai_filters.get('pubmed_api') or ai_filters.get('pubmed_api_key') or ''
+        
 
             insert_query = """
                 INSERT INTO "userSchema"."tasks" (
                     output_language, user_query,
                     max_refinement_attempts, min_study_threshold,
                     time, author, first_author, last_author, affiliation, journal, custom,
-                    impact_factor, jcr_zone, cas_zone, model, api
+                    impact_factor, jcr_zone, cas_zone, model, api, pubmed_api
                 ) VALUES (
                     $1, $2, $3,
                     $4, $5,
                     $6, $7, $8, $9, $10, $11, $12,
-                    $13, $14, $15, $16
+                    $13, $14, $15, $16, $17
                 ) RETURNING id
             """
             
@@ -123,12 +123,13 @@ async def create_search_task():
                 # LLM Config
                 ai_filters.get('model'),
                 ai_filters.get('api'),
+                ai_filters.get('pubmed_api')
             )
             
             # 4. Push to Celery
             # We send the task_id. The worker will likely need to fetch the task from DB or we pass parameters.
             # Passing just ID is cleaner if worker has DB access.
-            async_result = celery_app.send_task('search_workflow.run_search', args=[str(task_id), pubmed_api], queue='search_queue')
+            async_result = celery_app.send_task('search_workflow.run_search', args=[str(task_id)], queue='search_queue')
             celery_task_id = async_result.id
 
             # Store celery_task_id in Redis with 30m expiration

@@ -83,7 +83,7 @@ class ConfigLoader:
 
         # AI 提供商（支持字符串名称或旧版数字ID）
         # 新格式：直接使用字符串名称（如 "gemini", "claude", "deepseek"）
-        config["ai_provider"] = "vectorengine"
+        # config["ai_provider"] = "vectorengine"
         
         # 最大检索轮次
         max_attempts = cls._get_int_env("MAX_REFINEMENT_ATTEMPTS", 30, minimum=1)
