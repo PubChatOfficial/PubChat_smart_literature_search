@@ -16,7 +16,7 @@ curl -L -o PubChat.zip https://github.com/PubChatOfficial/PubChat_smart_literatu
 ```
 
 2.  **Windows User**
-    Press the ’Win‘ key, search for ’PowerShell‘, open it, then copy the command below and press ’Enter‘：
+    Press the ’Win‘ key, search for ’PowerShell‘, open it, then copy the command below and press ’Enter‘. Please do not install the software on the system drive, as installation is prone to failure due to permission issues.：
 ```bash
 Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip" -OutFile "PubChat.zip"; Expand-Archive -Path "PubChat.zip" -DestinationPath "." -Force; Set-Location "PubChat_smart_literature_search-main"; docker image inspect python:3.11-slim *> $null; if ($LASTEXITCODE -ne 0) { docker pull python:3.11-slim }; docker image inspect wuyuxuan1037/pubchat-celery-worker:latest *> $null; if ($LASTEXITCODE -eq 0) { docker image rm -f wuyuxuan1037/pubchat-celery-worker:latest }; docker compose up -d --build; Remove-Item "..\PubChat.zip" -Force
  ```
@@ -56,7 +56,7 @@ curl -L -o PubChat.zip https://github.com/PubChatOfficial/PubChat_smart_literatu
 ```
 
 2.  **Win用户**
-    按 Win键，搜索 PowerShell并打开，然后复制粘贴这一整行代码并回车：
+    按 Win键，搜索 PowerShell并打开，然后复制粘贴这一整行代码并回车。请勿在系统盘符下进行安装，容易因为权限问题而安装失败：
 ```bash
 Invoke-WebRequest -Uri "https://github.com/PubChatOfficial/PubChat_smart_literature_search/archive/refs/heads/main.zip" -OutFile "PubChat.zip"; Expand-Archive -Path "PubChat.zip" -DestinationPath "." -Force; Set-Location "PubChat_smart_literature_search-main"; docker image inspect python:3.11-slim *> $null; if ($LASTEXITCODE -ne 0) { docker pull python:3.11-slim }; docker image inspect wuyuxuan1037/pubchat-celery-worker:latest *> $null; if ($LASTEXITCODE -eq 0) { docker image rm -f wuyuxuan1037/pubchat-celery-worker:latest }; docker compose up -d --build; Remove-Item "..\PubChat.zip" -Force
 
