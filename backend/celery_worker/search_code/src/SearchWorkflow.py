@@ -911,7 +911,7 @@ class SearchWorkflow:
             # 注意：articles_in_batch 现在已经是元数据字典列表
             if self.state.journal_filters:
                 # 执行期刊过滤
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 filtered_articles, filter_stats = filter_articles_by_journal(
                     articles_in_batch,
                     self.state.journal_filters,
@@ -955,7 +955,7 @@ class SearchWorkflow:
             # 持久化
             if screened:
                 # 🛠️ Enrich for Redis (using robust logic from excel gen)
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 screened_enriched = enrich_articles_with_journal_info(
                     screened, csv_path, self.logger
                 )
@@ -966,7 +966,7 @@ class SearchWorkflow:
                 self._update_redis_progress()
                 
                 self.logger.info(f"➕ Accumulated {len(screened)} new articles. Total: {self.state.get_article_count()}.")
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 generate_formatted_excel(
                     self.state.screened_articles,
                     csv_path,
@@ -1191,7 +1191,7 @@ class SearchWorkflow:
             
             # 期刊过滤（如果有）
             if self.state.journal_filters:
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 filtered_articles, filter_stats = filter_articles_by_journal(
                     articles_with_abstract,
                     self.state.journal_filters,
@@ -1220,7 +1220,7 @@ class SearchWorkflow:
                 self.logger.info(f"➕ PubMed supplement added {len(screened)} articles. Total: {self.state.get_article_count()}.")
                 
                 # 更新输出文件
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 generate_formatted_excel(
                     self.state.screened_articles,
                     csv_path,
@@ -1276,7 +1276,7 @@ class SearchWorkflow:
             
             # 期刊过滤（如果有）
             if self.state.journal_filters:
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 filtered_articles, filter_stats = filter_articles_by_journal(
                     articles_with_abstract,
                     self.state.journal_filters,
@@ -1340,7 +1340,7 @@ class SearchWorkflow:
             
             # 期刊过滤（如果有）
             if self.state.journal_filters:
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search_code", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 filtered_articles, filter_stats = filter_articles_by_journal(
                     articles_with_abstract,
                     self.state.journal_filters,
@@ -1369,7 +1369,7 @@ class SearchWorkflow:
                 self.logger.info(f"➕ PubMed supplement added {len(screened)} articles. Total: {self.state.get_article_count()}.")
                 
                 # 更新输出文件
-                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search", "documents", "2025影响因子+2025年中科院分区.csv")
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "search", "documents", "2025影响因子+2025年中科院分区_更新版_2026-07-22.csv")
                 generate_formatted_excel(
                     self.state.screened_articles,
                     csv_path,
